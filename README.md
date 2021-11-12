@@ -1,6 +1,6 @@
 [![PyPI version](https://badge.fury.io/py/findCPcli.svg)](https://badge.fury.io/py/findCPcli) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![CI-CD](https://github.com/findCP/findCPcli/actions/workflows/main.yml/badge.svg)](https://github.com/findCP/findCPcli/actions/workflows/main.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=findCP_findCPcli&metric=alert_status)](https://sonarcloud.io/dashboard?id=findCP_findCPcli) [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-## CONTRABASS - Constrained-based models vulnerabilities analysis
+## CONTRABASS - Constraint-based models vulnerabilities analysis
 
 ```CONTRABASS``` is a command line python-tool for the computation of chokepoint reactions in genome-scale metabolic models. 
 The main purpose of the tool is to compute chokepoints by taking into account both the topology and the dynamic information of the network. In addition to the computation of chokepoints, findCPcli can compute and remove dead-end metabolites, find essential reactions and update the flux bounds of the reactions according to the results of Flux Variability Analysis. 
@@ -61,15 +61,15 @@ For a detailes description of the operations see the [documentation](https://fin
 $ contrabass
 Usage: python -m contrabass.cli.main [OPTIONS] COMMAND [ARGS]...
 
-  Compute vulnerabilities on constrained-based models
+  Compute vulnerabilities on constraint-based models
 
 Options:
   -h, --help     Show this message and exit.
   -V, --version  Show the version and exit.
 
 Commands:
-  new-model  Export refined constrained-based model.
-  report     Compute vulnerabilities on constrained-based models.
+  new-model  Export refined constraint-based model.
+  report     Compute vulnerabilities on constraint-based models.
 ```
 
 ## Low Level API

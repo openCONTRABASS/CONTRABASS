@@ -5,22 +5,10 @@ import subprocess
 import xlrd
 import math
 import sys
-from dotenv import load_dotenv
 
-load_dotenv()
 
-ENV_ENVIRONMENT = "ENVIRONMENT"
-ENV_DEV = "DEV"
-ENV_PRO = "PRO"
 
-if os.environ.get(ENV_ENVIRONMENT) == ENV_DEV:
-    # import relative path of core for development purposes
-    print("*** DEVELOPMENT ENVIRONMENT ***")
-    sys.path.append("../../findCPcore_pkg/core/")
-    from CobraMetabolicModel import CobraMetabolicModel
-else:
-    from findCPcore import CobraMetabolicModel
-
+from contrabass.core import CobraMetabolicModel
 from errorHandler import CellsNotEqualException
 
 
@@ -67,49 +55,6 @@ def __compare_two_spreadsheets_content(file1, file2):
                         name, row, col, file1, val1, file2, val2
                     )
 
-
-"""
-    Assure script can be runned.
-    Test with no args -> informative text expected
-"""
-
-
-def test_no_args():
-
-    LOGGER.info("Executing cli file: {}".format(FINDCPCLI_PATH))
-
-    f = open("data/no_args_err.txt", "r")
-    expected_result = f.read()
-    f.close()
-
-    try:
-        subprocess.check_output(
-            ["python", FINDCPCLI_PATH], stderr=subprocess.STDOUT, universal_newlines=True
-        )
-        raise RuntimeError(
-            "This point should not be reached. Return code must not be 0."
-        )
-    except subprocess.CalledProcessError as err:
-        assert expected_result in str(err.stdout)
-
-
-"""
-    Check error output when passing incorrect sbml input
-"""
-@pytest.mark.skip(reason="")
-def test_incorrect_input_model():
-    params = ["-i", INCORRECTLY_FORMATED, "-o", OUTPUT_SPREADSHEET_TEST]
-
-    LOGGER.info(LOGGER_MSG.format(FINDCPCLI_PATH, params))
-
-    f = open("data/test_incorrect_input_model.txt", "r")
-    expected_result = f.read()
-    f.close()
-
-    result = subprocess.check_output(
-        ["python", FINDCPCLI_PATH] + params, stderr=subprocess.STDOUT, universal_newlines=True
-    )
-    assert expected_result in str(result)
 
 
 """
