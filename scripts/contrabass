@@ -1,0 +1,419 @@
+#!/usr/bin/env python
+"""
+    This file is part of contrabass project.
+    Copyright (C) 2020-2021  Alex Oarga  <718123 at unizar dot es> (University of Zaragoza)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
+
+import sys, os
+import time
+from argparse import ArgumentParser
+from dotenv import load_dotenv
+from __future__ import absolute_import
+
+import click
+
+
+load_dotenv()
+
+ENV_ENVIRONMENT = "ENVIRONMENT"
+ENV_DEV = "DEV"
+ENV_PRO = "PRO"
+
+if os.environ.get(ENV_ENVIRONMENT) == ENV_DEV:
+    # import relative path of core for development purposes
+    print("*** DEVELOPMENT ENVIRONMENT ***")
+    sys.path.append("../../findCPcore_pkg/core/")
+    from Facade import Facade
+    from FacadeUtils import FacadeUtils
+    from utils.GrowthDependentCPConfig import GrowthDependentCPConfig
+    from utils.CriticalCPConfig import CriticalCPConfig
+else:
+    from findCPcore import Facade
+    from findCPcore import FacadeUtils
+    from findCPcore.utils.GrowthDependentCPConfig import GrowthDependentCPConfig
+    from findCPcore.utils.CriticalCPConfig import CriticalCPConfig
+
+TASK_CRITICAL_REACTIONS = "TASK_CRITICAL_REACTIONS"
+TASK_SENSIBILITY = "TASK_SENSIBILITY"
+TASK_SAVE_WITHOUT_DEM = "TASK_SAVE_WITHOUT_DEM"
+TASK_SAVE_WITH_FVA = "TASK_SAVE_WITH_FVA"
+TASK_SAVE_WITH_FVA_DEM = "TASK_SAVE_WITH_FVA_DEM"
+
+MSG_SUCCESFULL_SAVE = "File successfully saved at: {}"
+MSG_UNKNOWN_ERROR = "Error, something went wrong: {}"
+MSG_FURTHER_INFO = "run contrabass -h for further information."
+
+PARAM_INPUT_FILE = "<input file>"
+PARAM_OUTPUT_FILE = "<output file>"
+PARAM_REACTION_ID = "<reaction id>"
+PARAM_FRACTION = "<fraction>"
+
+LICENSE = """
+    contrabass Copyright (C) 2020-2021  Alex Oarga  <718123 at unizar dot es> (University of Zaragoza)
+    This program comes with ABSOLUTELY NO WARRANTY;
+    This is free software, and you are welcome to redistribute it
+    under certain conditions;
+    For details see <https://github.com/findCP/findCPcli/blob/master/LICENSE>
+    If not available, see <https://www.gnu.org/licenses/>
+"""
+
+
+def verbose_f(text, args1=False, args2=False):
+    if args1:
+        print(text)
+
+
+def save_final_spreadsheet(facade, output_path, verbose_f, error):
+    if error == "":
+        (result_ok, text) = facade.save_spreadsheet(
+            False, output_path, verbose_f
+        )
+        if result_ok:
+            print(MSG_SUCCESFULL_SAVE.format(text))
+        else:
+            print(MSG_UNKNOWN_ERROR.format(text))
+    else:
+        print(MSG_UNKNOWN_ERROR.format(error))
+
+def save_final_model(facade, output_path, verbose_f):
+    (result_ok, text) = facade.save_model(output_path, False, verbose_f)
+    if result_ok:
+        print(MSG_SUCCESFULL_SAVE.format(text))
+    else:
+        print(MSG_UNKNOWN_ERROR.format(text))
+
+def check_error_save_final_model(error, facade, output_path, verbose_f):
+    if error != "":
+        print(MSG_UNKNOWN_ERROR.format(error))
+    else:
+        save_final_model(facade, output_path, verbose_f)
+
+def run(task, model_path, output_path, verbose, objective=None, fraction=1.0):
+    try:
+        if task == TASK_CRITICAL_REACTIONS:
+            print("Task: Save results spreadsheet")
+
+            config = CriticalCPConfig()
+            config.model_path = model_path
+            config.print_f = verbose_f
+            config.args1 = verbose
+            config.args2 = None
+            config.output_path_spreadsheet = output_path
+            config.output_path_html = output_path[:output_path.rfind('.')] + '.html'
+            config.objective = objective
+            config.fraction = fraction
+
+            facade = Facade()
+            facade.generate_critical_cp_report(config)
+
+        elif task == TASK_SENSIBILITY:
+
+            print("Task: Save growth dependent chokepoints reports")
+
+            config = GrowthDependentCPConfig()
+            config.model_path = model_path
+            config.print_f = verbose_f
+            config.args1 = verbose
+            config.args2 = None
+            config.output_path_spreadsheet = output_path
+            config.output_path_html = output_path[:output_path.rfind('.')] + '.html'
+            config.objective = objective
+
+            facade = Facade()
+            facade.generate_growth_dependent_report(config)
+
+        elif task == TASK_SAVE_WITHOUT_DEM:
+            print("Task: save model without dead end metabolites")
+            facade = Facade()
+            facade.find_and_remove_dem(
+                False, output_path, verbose_f, model_path, args1=verbose, args2=None
+            )
+            save_final_model(facade, output_path, verbose_f)
+
+        elif task == TASK_SAVE_WITH_FVA:
+            print("Task: save model refined with Flux Variability Analysis")
+            facade = Facade()
+            error = facade.run_fva(
+                False,
+                output_path,
+                verbose_f,
+                model_path,
+                args1=verbose,
+                args2=None,
+                objective=objective,
+                fraction=fraction
+            )
+            check_error_save_final_model(error, facade, output_path, verbose_f)
+
+        elif task == TASK_SAVE_WITH_FVA_DEM:
+            print(
+                "Task: save model refined with Flux Variability Analysis without dead end metabolites"
+            )
+            facade = Facade()
+            error = facade.run_fva_remove_dem(
+                False,
+                output_path,
+                verbose_f,
+                model_path,
+                args1=verbose,
+                args2=None,
+                objective=objective,
+                fraction=fraction
+            )
+            check_error_save_final_model(error, facade, output_path, verbose_f)
+
+        # Leave final blank line
+        print("")
+
+    except Exception as error:
+        print("Error: Something went wrong:")
+        # Important: the error is not raised but instead it is printed.
+        print(str(error))
+        if os.environ.get(ENV_ENVIRONMENT) == ENV_DEV:
+            raise error
+
+
+def read_input():
+    input_file = ""
+    output = ""
+    parser = ArgumentParser(description="")
+
+    parser.add_argument(
+        "-v", "--verbose", help="Print feedback while running.", action="store_true"
+    )
+    parser.add_argument(
+        "-l",
+        "--license",
+        dest="license",
+        help="View license info.",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-i",
+        dest="input_file",
+        required=True,
+        metavar=PARAM_INPUT_FILE,
+        help="Input metabolic model. Allowed file formats: .xml .json .yml",
+    )
+    parser.add_argument(
+        "-o",
+        dest="output_file",
+        metavar=PARAM_OUTPUT_FILE,
+        help="Output spreadsheet file with results. Allowed file formats: .xls .xlsx .ods",
+    )
+    parser.add_argument(
+        "-cp",
+        dest="cp",
+        metavar=PARAM_OUTPUT_FILE,
+        help="Output spreadsheet file with growth dependent chokepoints. Allowed file formats: .xls .xlsx .ods",
+    )
+    parser.add_argument(
+        "-swD",
+        dest="model_remove_dem",
+        metavar=PARAM_OUTPUT_FILE,
+        help="Save output model without Dead End Metabolites. Allowed file formats: .xml .json .yml",
+    )
+    parser.add_argument(
+        "-sF",
+        dest="model_fva",
+        metavar=PARAM_OUTPUT_FILE,
+        help="Save output model with reactions bounds updated with Flux Variability Analysis. Allowed file formats: "
+             ".xml .json .yml",
+    )
+    parser.add_argument(
+        "-swDF",
+        dest="model_fva_remove_dem",
+        metavar=PARAM_OUTPUT_FILE,
+        help="Save output model with reactions bounds updated with Flux Variability Analysis and without Dead End "
+             "Metabolites. Allowed file formats: .xml .json .yml",
+    )
+    parser.add_argument(
+        "-objective",
+        dest="objective",
+        metavar=PARAM_REACTION_ID,
+        help="Reaction id to be used as objective function with Flux Balance Analysis",
+    )
+    parser.add_argument(
+        "-fraction",
+        dest="fraction",
+        metavar=PARAM_FRACTION,
+        help="Fraction of optimum growth to be used in Flux Variability Analysis. Value must be beetwen 0.0 and 1.0",
+    )
+
+    args = parser.parse_args()
+
+    params = {}
+    params["input_file"] = args.input_file
+    params["output"] = args.output_file
+    params["cp"] = args.cp
+    params["model_remove_dem"] = args.model_remove_dem
+    params["model_fva"] = args.model_fva
+    params["model_fva_remove_dem"] = args.model_fva_remove_dem
+    params["objective"] = args.objective
+    params["verbose"] = args.verbose
+    params["license"] = args.license
+    params["fraction"] = args.fraction
+
+    return params
+
+def __check_model_file(path):
+    if path[-4:] != ".xml" and path[-5:] != ".json" and path[-4:] != ".yml":
+        return False
+    else:
+        return True
+
+
+def __check_spread_file(path):
+    if path[-4:] != ".xls" and path[-4:] != ".ods" and path[-5:] != ".xlsx":
+        return False
+    else:
+        return True
+
+
+def validate_input_model(input_file):
+    if not __check_model_file(input_file):
+        print("Model file must be either .xml .json .yml")
+        print(MSG_FURTHER_INFO)
+        exit(1)
+
+
+# Method for validating the output file path for operation that generate a new model
+def validate_output_model(list_of_output_path):
+    for output_path in list_of_output_path:
+        # if the output path is not None,
+        # 	the task will be performed and the file needs validation
+        # else if the output path is None,
+        # 	the task has not been selected and the file is not checked
+        if output_path is not None and not __check_model_file(output_path):
+            print("Output model file must be either .xml .json .yml")
+            print(MSG_FURTHER_INFO)
+            exit(1)
+
+
+# Method for validating the output file path for operation that generate a new spreadsheet file
+def validate_output_spread(list_of_output_path):
+    for output_path in list_of_output_path:
+        # if the output path is not None,
+        # 	the task will be performed and the file needs validation
+        # else if the output path is None,
+        # 	task has not been selected and the file is not checked
+        if output_path is not None and not __check_spread_file(output_path):
+            print("Output file must be .xls .xlsx or .ods")
+            print(MSG_FURTHER_INFO)
+            exit(1)
+
+
+# Check that at least one operation has been selected
+def validate_operation_selected(list_of_possible_operations):
+    operation_selected = False
+    for operation in list_of_possible_operations:
+        if operation is not None:
+            operation_selected = True
+
+    if not operation_selected:
+        print("Please select at least one operation to perform: ")
+        print(
+            "[-o <output file>] [-cp <output file>] [-swD <output file>] "
+            + "[-sF <output file>] [-swDF <output file>]"
+        )
+        print(MSG_FURTHER_INFO)
+        exit(1)
+
+def validate_number(parameter):
+    try:
+        parameter = float(parameter)
+    except:
+        print("Error: parameter 'fraction' must be a decimal number beetwen 0.0 and 1.0")
+        exit(1)
+    return parameter
+
+#
+# 	Main cli workflow
+# 	 Input is read, validated and each task executed independently
+#
+def main():
+    # Read input
+    params = read_input()
+    input_file = params["input_file"]
+    output_file = params["output"]
+    cp = params["cp"]
+    model_remove_dem = params["model_remove_dem"]
+    model_fva = params["model_fva"]
+    model_fva_remove_dem = params["model_fva_remove_dem"]
+    objective = params["objective"]
+    verbose = params["verbose"]
+    license = params["license"]
+    fraction = params["fraction"]
+
+    # Default values
+    if fraction is None:
+        fraction = 1.0
+    fraction = validate_number(fraction)
+        
+    
+
+    # Operations that dont requiere validation
+    if license:
+        print(LICENSE)
+
+    # Note that the following save the outputh path of each operation
+    # If the variable is None, no operation that operation has not been selected
+    NEW_MODEL_OPERATIONS = [
+        model_remove_dem,
+        model_fva,
+        model_fva_remove_dem,
+    ]  # Tasks that generate new models
+    NEW_SPREADSHEET_OPS = [output_file, cp]  # Tasks that generate spreadsheet files
+
+    # Check input file formats and task
+    validate_input_model(input_file)
+    validate_output_model(NEW_MODEL_OPERATIONS)
+    validate_output_spread(NEW_SPREADSHEET_OPS)
+    validate_operation_selected(NEW_MODEL_OPERATIONS + NEW_SPREADSHEET_OPS)
+
+    # Run task
+    if output_file is not None:
+        task = TASK_CRITICAL_REACTIONS
+        out_path = output_file
+        run(task, input_file, out_path, verbose, objective, fraction)
+
+    if cp is not None:
+        task = TASK_SENSIBILITY
+        out_path = cp
+        run(task, input_file, out_path, verbose, objective, fraction)
+
+    if model_remove_dem is not None:
+        task = TASK_SAVE_WITHOUT_DEM
+        out_path = model_remove_dem
+        run(task, input_file, out_path, verbose, objective, fraction)
+
+    if model_fva is not None:
+        task = TASK_SAVE_WITH_FVA
+        out_path = model_fva
+        run(task, input_file, out_path, verbose, objective, fraction)
+
+    if model_fva_remove_dem is not None:
+        task = TASK_SAVE_WITH_FVA_DEM
+        out_path = model_fva_remove_dem
+        run(task, input_file, out_path, verbose, objective, fraction)
+
+@cli.command()
+@click.argument('model_path_1')
+def merge(model_path_1, model_path_2):
+
+
+if __name__ == "__main__":
+    main()

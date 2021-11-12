@@ -1,0 +1,6 @@
+findCPcore==0.1.1
+numpy>=1.16.5
+xlrd
+python-dotenv
+optlang==1.4.4
+python-libsbml==5.18.0
