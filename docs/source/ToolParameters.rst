@@ -2,33 +2,43 @@
 8. Tool parameters
 ==================
 
-More information about the parameters of the tool can be obtained by executing ``findCPcli -h``.
+More information about the parameters of the tool can be obtained by executing ``contrabass -h``.
 
 ::
 
-	$ findCPcli [-h] [-v] [-l] -i <input file> [-o <output file>]
-		         [-cp <output file>] [-swD <output file>] [-sF <output file>]
-		         [-swDF <output file>]
+	$ contrabass -h
 
-		               
-	optional arguments:
-	  -h, --help           show this help message and exit
-	  -v, --verbose        Print feedback while running.
-	  -l, --license        View license info.
-	  -i <input file>      Input metabolic model. Allowed file formats: .xml .json
-		               .yml
-	  -o <output file>     Output spreadsheet file with results. Allowed file
-		               formats: .xls .xlsx .ods
-	  -cp <output file>    Output spreadsheet file with growth dependent
-		               chokepoints. Allowed file formats: .xls .xlsx .ods
-	  -swD <output file>   Save output model without Dead End Metabolites. Allowed
-		               file formats: .xml .json .yml
-	  -sF <output file>    Save output model with reactions bounds updated with
-		               Flux Variability Analysis. Allowed file formats: .xml
-		               .json .yml
-	  -swDF <output file>  Save output model with reactions bounds updated with
-		               Flux Variability Analysis and without Dead End
-		               Metabolites. Allowed file formats: .xml .json .yml
-	  -objective <reaction id>
-		                Reaction id to be used as objective function with Flux
-		                Balance Analysis
+        Usage: contrabass [OPTIONS] COMMAND [ARGS]...
+
+          Compute vulnerabilities on constrained-based models
+
+        Options:
+          -h, --help     Show this message and exit.
+          -V, --version  Show the version and exit.
+
+        Commands:
+          new-model  Export refined constrained-based model.
+          report     Compute vulnerabilities on constrained-based models.
+
+Two options are available regarding the production of vulnerabilities reports:
+
+::
+
+    $ contrabass report -h
+
+    Commands:
+      critical-reactions
+      growth-dependent-reactions
+
+Three options are available when exporting a new model:
+
+::
+
+    $ contrabass new-model
+
+    Commands:
+      fva-constrained              Export a new model with its (maximum and...
+      fva-constrained-without-dem  Export a new model with its (maximum and...
+      without-dem                  Export a new model where Dead-End...
+
+

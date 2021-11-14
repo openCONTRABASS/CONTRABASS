@@ -2,9 +2,9 @@
 10. License
 ===============
 
-findCPcli is released under GPLv3_.
+CONTRABASS is released under GPLv3_.
 
-.. _GPLv3: https://github.com/findCP/findCPcli/blob/master/LICENSE
+.. _GPLv3: https://github.com/openCONTRABASS/CONTRABASS/blob/master/LICENSE
 
 
 For citation purposes please refer to:

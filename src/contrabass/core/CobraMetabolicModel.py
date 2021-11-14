@@ -708,7 +708,7 @@ class CobraMetabolicModel:
             and reactions that only produce or consume
 
             - delete_exchange:
-                - True: all the reactions that are produce or consume 0 metabolites are deleted whether they are exchange/demand or not.
+                - True: all the reactions that produce or consume 0 metabolites are deleted whether they are exchange/demand or not.
                 - False: deleted according to 'keep_all_incomplete_reactions' param.
             - keep_all_incomplete_reactions:
                 - False: if a reactions is in [cobra Boundary reactions](https://cobrapy.readthedocs.io/en/latest/media.html#Boundary-reactions) (calculated by heuristics) that reaction can't be deleted.
@@ -732,13 +732,6 @@ class CobraMetabolicModel:
         else:
             self.__remove_dem(False, keep_all_incomplete_reactions)
 
-        """ 
-
-        Args:
-            loopless (): Runs a lopeless analysis
-            verbose (): Prints the results obtained in the analysis
-            update_flux (): Updates the bounds of the reaction with the values obtained with the F.V.A.
-        """
 
     def fva(self, loopless=False, verbose=False, update_flux=False, threshold=None, pfba_factor=None):
         """ If possible, runs a Flux Variability Analysis on the model and saves the result on the '__fva' class atribute.

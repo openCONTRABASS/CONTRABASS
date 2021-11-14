@@ -1,9 +1,9 @@
-.. findCPcli documentation master file, created by
+.. contrabass documentation master file, created by
    sphinx-quickstart on Wed Jan  1 22:32:28 2020.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to findCPcli's documentation!
+Welcome to CONRTABASS's documentation!
 ========================================
 
 .. toctree::
@@ -13,12 +13,12 @@ Welcome to findCPcli's documentation!
     Introduction
     Installation
     Pseudocode
-    ComputeChokepoints
+    ComputeVulnerabilities
     ComputeGrowthDependent
     RemoveDeadEndMetabolites
     RefineModelWithFVA
     ToolParameters
-    LowLevelAPI
+    CORE
     License
 
 

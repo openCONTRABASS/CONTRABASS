@@ -6,5 +6,5 @@ The following command exports a new generated model without Dead-End Metabolites
 
 ::
 
-    $ findCPcli -i model.xml -swD new_model.xml
+    $ contrabass new-model without-dem MODEL.xml
 

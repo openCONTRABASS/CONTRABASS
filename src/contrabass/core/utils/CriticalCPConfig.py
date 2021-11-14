@@ -1,5 +1,4 @@
 class CriticalCPConfig:
-
     def __init__(self):
         self.__model_path = None
         self.__print_f = None

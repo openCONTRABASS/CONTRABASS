@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 import click
 
-__version__ = '0.0.0'
+__version__ = "0.0.0"
 
 from .commands import report, new_model
 
@@ -21,5 +21,5 @@ contrabass.add_command(report)
 contrabass.add_command(new_model)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     contrabass()

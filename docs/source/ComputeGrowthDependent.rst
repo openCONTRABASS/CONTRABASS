@@ -1,13 +1,17 @@
 
-5. Compute growth dependent chokepoints
+5. Compute growth dependent reactions
 =======================================
 
-findCPcli can be used to compute `Growth Dependent Chokepoints <https://doi.org/10.1007/978-3-030-60327-4_6>`_ as follows: a) the flux of the objective function is set to a given fraction of its optimal value; b) FVA is run to compute lower and upper flux bounds of the reactions; c) the flux bounds are used to identify reversible, non reversible and dead reactions (i.e. reaction with lower and upper bound equal to 0); and d) this directionality of reactions is used to determine consumer and producer reactions, and in turn, chokepoints. The tool produces a spreadsheet showing how the size of the set of chokepoints varies with the fraction of the optimal value set to the objective function.
+contrabass can be used to compute `Growth Dependent Chokepoints <https://doi.org/10.1007/978-3-030-60327-4_6>`_  (amongst other reactions) as follows:
+    1. the flux of the objective function is set to a given fraction of its optimal value;
+    2. FVA is run to compute lower and upper flux bounds of the reactions;
+    3. the flux bounds are used to identify reversible, non reversible and dead reactions (i.e. reaction with lower and upper bound equal to 0);
+    4. this directionality of reactions is used to determine consumer and producer reactions, and in turn, chokepoints. The tool produces a spreadsheet and html report showing how the size of the set of chokepoints varies with the fraction of the optimal value set to the objective function.
 
 
 ::
 
-    $ findCPcli -i model.xml -cp results.xls
+    $ contrabass report growth-dependent-reactions MODEL.xml
 
 
 5.1. Procedure pseudocode

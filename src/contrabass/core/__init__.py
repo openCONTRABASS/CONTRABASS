@@ -8,4 +8,3 @@ from contrabass.core.Spreadsheet import *
 from contrabass.core.FacadeUtils import *
 from contrabass.core.Facade import *
 from contrabass.core.FacadeThread import *
-

@@ -489,9 +489,7 @@ class Spreadsheet:
         reactions_fva_key = reactions_fva.keys()
         reactions_fva_dem_key = reactions_fva_dem.keys()
         if ordered:
-            reactions = sorted(
-                state_initial.knockout_growth().keys(), key=self.__id
-            )
+            reactions = sorted(state_initial.knockout_growth().keys(), key=self.__id)
         row = 1
         for reaction in reactions:
             sheet.write(row, 0, reaction.id)

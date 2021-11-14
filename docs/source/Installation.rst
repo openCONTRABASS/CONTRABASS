@@ -2,8 +2,8 @@
 2. Installation
 ===================
 
-``findCPcli`` can be installed with **pip** package manager:
+``contrabass`` can be installed with **pip** package manager:
 ::
 
-  $ pip install findCPcli
+  $ pip install contrabass
 

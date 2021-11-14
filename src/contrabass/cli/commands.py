@@ -2,9 +2,17 @@ from __future__ import absolute_import
 
 import click
 
-from contrabass.cli.utils import validate_input_model, validate_output_model, validate_output_spread, \
-    save_final_spreadsheet, \
-    save_final_model, check_error_save_final_model, verbose_f, validate_number, validate_output_html_path
+from contrabass.cli.utils import (
+    validate_input_model,
+    validate_output_model,
+    validate_output_spread,
+    save_final_spreadsheet,
+    save_final_model,
+    check_error_save_final_model,
+    verbose_f,
+    validate_number,
+    validate_output_html_path,
+)
 from contrabass.core import Facade
 from contrabass.core import FacadeUtils
 from contrabass.core.utils.GrowthDependentCPConfig import GrowthDependentCPConfig
@@ -65,7 +73,7 @@ def new_model():
     "--objective",
     type=str,
     metavar="OBJECTIVE",
-    help="Reaction id to be used as objective function with Flux Balance Analysis"
+    help="Reaction id to be used as objective function with Flux Balance Analysis",
 )
 @click.option(
     "--output-spreadsheet",
@@ -88,15 +96,10 @@ def new_model():
     type=float,
     default=1.0,
     metavar="FRACTION",
-    help="Fraction of optimum growth to be used in Flux Variability Analysis. Value must be between 0.0 and 1.0"
+    help="Fraction of optimum growth to be used in Flux Variability Analysis. Value must be between 0.0 and 1.0",
 )
 def critical_reactions(
-        model,
-        output_spreadsheet,
-        output_html_report,
-        verbose,
-        objective,
-        fraction
+    model, output_spreadsheet, output_html_report, verbose, objective, fraction
 ):
     # Default values
     if fraction is None:
@@ -108,7 +111,15 @@ def critical_reactions(
     validate_output_html_path(output_html_report)
 
     task = TASK_CRITICAL_REACTIONS
-    run(task, model, output_spreadsheet, output_html_report, verbose, objective, fraction)
+    run(
+        task,
+        model,
+        output_spreadsheet,
+        output_html_report,
+        verbose,
+        objective,
+        fraction,
+    )
 
 
 @report.command()
@@ -128,7 +139,7 @@ def critical_reactions(
     "--objective",
     type=str,
     metavar="OBJECTIVE",
-    help="Reaction id to be used as objective function with Flux Balance Analysis"
+    help="Reaction id to be used as objective function with Flux Balance Analysis",
 )
 @click.option(
     "--output-spreadsheet",
@@ -147,11 +158,11 @@ def critical_reactions(
     help="Output spreadsheet file with results. Allowed file formats: '.html'. Default value: output.html",
 )
 def growth_dependent_reactions(
-        model,
-        output_spreadsheet,
-        output_html_report,
-        verbose,
-        objective,
+    model,
+    output_spreadsheet,
+    output_html_report,
+    verbose,
+    objective,
 ):
     validate_input_model(model)
     validate_output_spread(output_spreadsheet)
@@ -178,14 +189,14 @@ def growth_dependent_reactions(
     "--objective",
     type=str,
     metavar="OBJECTIVE",
-    help="Reaction id to be used as objective function with Flux Balance Analysis"
+    help="Reaction id to be used as objective function with Flux Balance Analysis",
 )
 @click.option(
     "--fraction",
     type=float,
     default=1.0,
     metavar="FRACTION",
-    help="Fraction of optimum growth to be used in Flux Variability Analysis. Value must be between 0.0 and 1.0"
+    help="Fraction of optimum growth to be used in Flux Variability Analysis. Value must be between 0.0 and 1.0",
 )
 @click.option(
     "--output-model",
@@ -193,18 +204,19 @@ def growth_dependent_reactions(
     type=str,
     default=DEFAULT_MODEL_FILE,
     metavar="OUTPUT-MODEL",
-    help="Output model file. Allowed file formats: '.xml' '.json' '.yml'. Default value: " + DEFAULT_MODEL_FILE
+    help="Output model file. Allowed file formats: '.xml' '.json' '.yml'. Default value: "
+    + DEFAULT_MODEL_FILE,
 )
 def fva_constrained(
-        model,
-        verbose,
-        objective,
-        fraction,
-        output_model,
+    model,
+    verbose,
+    objective,
+    fraction,
+    output_model,
 ):
     """
-        Export a new model with its (maximum and minimum )flux bounds replaced with the
-        constrained flux values obtained with Flux Variability Analysis.
+    Export a new model with its (maximum and minimum )flux bounds replaced with the
+    constrained flux values obtained with Flux Variability Analysis.
     """
     validate_input_model(model)
     validate_output_model(output_model)
@@ -230,14 +242,14 @@ def fva_constrained(
     "--objective",
     type=str,
     metavar="OBJECTIVE",
-    help="Reaction id to be used as objective function with Flux Balance Analysis"
+    help="Reaction id to be used as objective function with Flux Balance Analysis",
 )
 @click.option(
     "--fraction",
     type=float,
     default=1.0,
     metavar="FRACTION",
-    help="Fraction of optimum growth to be used in Flux Variability Analysis. Value must be between 0.0 and 1.0"
+    help="Fraction of optimum growth to be used in Flux Variability Analysis. Value must be between 0.0 and 1.0",
 )
 @click.option(
     "--output-model",
@@ -245,14 +257,15 @@ def fva_constrained(
     type=str,
     default=DEFAULT_MODEL_FILE,
     metavar="OUTPUT-MODEL",
-    help="Output model file. Allowed file formats: '.xml' '.json' '.yml'. Default value: " + DEFAULT_MODEL_FILE
+    help="Output model file. Allowed file formats: '.xml' '.json' '.yml'. Default value: "
+    + DEFAULT_MODEL_FILE,
 )
 def without_dem(
-        model,
-        verbose,
-        objective,
-        fraction,
-        output_model,
+    model,
+    verbose,
+    objective,
+    fraction,
+    output_model,
 ):
     """
     Export a new model where Dead-End Metabolites have been removed.
@@ -283,14 +296,14 @@ def without_dem(
     "--objective",
     type=str,
     metavar="OBJECTIVE",
-    help="Reaction id to be used as objective function with Flux Balance Analysis"
+    help="Reaction id to be used as objective function with Flux Balance Analysis",
 )
 @click.option(
     "--fraction",
     type=float,
     default=1.0,
     metavar="FRACTION",
-    help="Fraction of optimum growth to be used in Flux Variability Analysis. Value must be between 0.0 and 1.0"
+    help="Fraction of optimum growth to be used in Flux Variability Analysis. Value must be between 0.0 and 1.0",
 )
 @click.option(
     "--output-model",
@@ -298,25 +311,27 @@ def without_dem(
     type=str,
     default=DEFAULT_MODEL_FILE,
     metavar="OUTPUT-MODEL",
-    help="Output model file. Allowed file formats: '.xml' '.json' '.yml'. Default value: " + DEFAULT_MODEL_FILE
+    help="Output model file. Allowed file formats: '.xml' '.json' '.yml'. Default value: "
+    + DEFAULT_MODEL_FILE,
 )
 def fva_constrained_without_dem(
-        model,
-        verbose,
-        objective,
-        fraction,
-        output_model,
+    model,
+    verbose,
+    objective,
+    fraction,
+    output_model,
 ):
     """
-        Export a new model with its (maximum and minimum) flux bounds replaced with the
-        constrained flux values obtained with Flux Variability Analysis.
-        In addition, Dead-End Metabolites are removed iteratively after the flux update.
+    Export a new model with its (maximum and minimum) flux bounds replaced with the
+    constrained flux values obtained with Flux Variability Analysis.
+    In addition, Dead-End Metabolites are removed iteratively after the flux update.
     """
     validate_input_model(model)
     validate_output_model(output_model)
 
     task = TASK_SAVE_WITH_FVA_DEM
     run(task, model, output_model, None, verbose, objective, fraction)
+
 
 @click.command()
 @click.help_option("--help", "-h")
@@ -328,13 +343,13 @@ def license():
 
 
 def run(
-        task,
-        model_path,
-        output_path,  # output spreadsheet report file or in case of new model, the output model path
-        output_path_html,
-        verbose,
-        objective=None,
-        fraction=1.0
+    task,
+    model_path,
+    output_path,  # output spreadsheet report file or in case of new model, the output model path
+    output_path_html,
+    verbose,
+    objective=None,
+    fraction=1.0,
 ):
     try:
         if task == TASK_CRITICAL_REACTIONS:
@@ -387,7 +402,7 @@ def run(
                 args1=verbose,
                 args2=None,
                 objective=objective,
-                fraction=fraction
+                fraction=fraction,
             )
             check_error_save_final_model(error, facade, output_path, verbose_f)
 
@@ -404,7 +419,7 @@ def run(
                 args1=verbose,
                 args2=None,
                 objective=objective,
-                fraction=fraction
+                fraction=fraction,
             )
             check_error_save_final_model(error, facade, output_path, verbose_f)
 

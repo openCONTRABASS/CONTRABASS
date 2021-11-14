@@ -16,7 +16,7 @@ except ImportError:
     # Try backported to PY<37 `importlib_resources`.
     import importlib_resources as pkg_resources
 
-envars = os.path.dirname(os.path.realpath(__file__)) + '/.env'
+envars = os.path.dirname(os.path.realpath(__file__)) + "/.env"
 
 from contrabass.core.CobraMetabolicModel import CobraMetabolicModel
 from contrabass.core.Spreadsheet import Spreadsheet
@@ -24,9 +24,10 @@ from contrabass.core.State import StateEncoder
 from contrabass.core.utils.CustomLogger import CustomLogger
 from contrabass.core.util import *
 
-#import contrabass.core
-#VERSION=contrabass.__version__
-VERSION = '0.0.0'
+# import contrabass.core
+# VERSION=contrabass.__version__
+VERSION = "0.0.0"
+
 
 class ErrorGeneratingModel(Exception):
     pass
@@ -47,8 +48,9 @@ class FacadeUtils:
     def __init__(self, processes=None):
         self.__processes = processes
 
-
-    def __generate_sheet_sensibility_analysis(self, xlwt_worbook, results_growth_dependent):
+    def __generate_sheet_sensibility_analysis(
+        self, xlwt_worbook, results_growth_dependent
+    ):
 
         style = xlwt.XFStyle()
         font = xlwt.Font()
@@ -56,7 +58,7 @@ class FacadeUtils:
         style.font = font
         sheet = xlwt_worbook.add_sheet("main")
 
-        model = results_growth_dependent['model']
+        model = results_growth_dependent["model"]
 
         sheet.write(0, 0, "Model", style=style)
         sheet.write(2, 0, "Reactions", style=style)
@@ -73,39 +75,65 @@ class FacadeUtils:
 
         y = 1
         X_OFFSET = 4
-        for i in range(0, len(results_growth_dependent['index'])):
+        for i in range(0, len(results_growth_dependent["index"])):
             if i == 0:
-                sheet.write(0, i + X_OFFSET, results_growth_dependent['index'][i], style=style)
+                sheet.write(
+                    0, i + X_OFFSET, results_growth_dependent["index"][i], style=style
+                )
             else:
-                sheet.write(0, i + X_OFFSET, "gamma = " + results_growth_dependent['index'][i], style=style)
-            if type(results_growth_dependent['reversible'][i]) == list\
-            or type(results_growth_dependent['reversible'][i]) == set:
-                sheet.write(y + 0, i + X_OFFSET, len(results_growth_dependent['reversible'][i]))
-                sheet.write(y + 1, i + X_OFFSET, len(results_growth_dependent['non_reversible'][i]))
-                sheet.write(y + 2, i + X_OFFSET, len(results_growth_dependent['dead'][i]))
-                sheet.write(y + 3, i + X_OFFSET, len(results_growth_dependent['chokepoints'][i]))
+                sheet.write(
+                    0,
+                    i + X_OFFSET,
+                    "gamma = " + results_growth_dependent["index"][i],
+                    style=style,
+                )
+            if (
+                type(results_growth_dependent["reversible"][i]) == list
+                or type(results_growth_dependent["reversible"][i]) == set
+            ):
+                sheet.write(
+                    y + 0, i + X_OFFSET, len(results_growth_dependent["reversible"][i])
+                )
+                sheet.write(
+                    y + 1,
+                    i + X_OFFSET,
+                    len(results_growth_dependent["non_reversible"][i]),
+                )
+                sheet.write(
+                    y + 2, i + X_OFFSET, len(results_growth_dependent["dead"][i])
+                )
+                sheet.write(
+                    y + 3, i + X_OFFSET, len(results_growth_dependent["chokepoints"][i])
+                )
             else:
-                sheet.write(y + 0, i + X_OFFSET, results_growth_dependent['reversible'][i])
-                sheet.write(y + 1, i + X_OFFSET, results_growth_dependent['non_reversible'][i])
-                sheet.write(y + 2, i + X_OFFSET, results_growth_dependent['dead'][i])
-                sheet.write(y + 3, i + X_OFFSET, results_growth_dependent['chokepoints'][i])
+                sheet.write(
+                    y + 0, i + X_OFFSET, results_growth_dependent["reversible"][i]
+                )
+                sheet.write(
+                    y + 1, i + X_OFFSET, results_growth_dependent["non_reversible"][i]
+                )
+                sheet.write(y + 2, i + X_OFFSET, results_growth_dependent["dead"][i])
+                sheet.write(
+                    y + 3, i + X_OFFSET, results_growth_dependent["chokepoints"][i]
+                )
 
         return xlwt_worbook
-
 
     def __generate_model_info_dict(self, model):
         # Save metadata
         results = {}
-        results['solver'] = str(type(model.model().solver))
-        results['findCPcore_version'] = VERSION
-        results['date'] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        results["solver"] = str(type(model.model().solver))
+        results["findCPcore_version"] = VERSION
+        results["date"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         # save model data
-        results['model_identifier'] = model.id()
-        results['growth'] = model.get_growth()
-        results['objective'] = model.objective()
+        results["model_identifier"] = model.id()
+        results["growth"] = model.get_growth()
+        results["objective"] = model.objective()
         return results
 
-    def compute_growth_dependent_chokepoints(self, model_path, print_f, arg1, arg2, objective=None):
+    def compute_growth_dependent_chokepoints(
+        self, model_path, print_f, arg1, arg2, objective=None
+    ):
 
         FRAC = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99, 1.0]
         results_growth_dependent = defaultdict(list)
@@ -133,47 +161,61 @@ class FacadeUtils:
         essential_reactions_initial = set([r.id for r in model.essential_reactions()])
 
         # save model data
-        results_growth_dependent['model'] = model
-        results_growth_dependent['reactions'] = [r.id for r in model.reactions()]
-        results_growth_dependent['metabolites'] = [m.id for m in model.metabolites()]
-        results_growth_dependent['genes'] = [g.id for g in model.genes()]
-        results_growth_dependent['compartments'] = list(model.compartments())
-        results_growth_dependent['essential'] = [r.id for r in model.knockout_growth()]
-        results_growth_dependent['optimal_essential'] = [r.id for r in model.optimal_growth_essential_reactions()]
+        results_growth_dependent["model"] = model
+        results_growth_dependent["reactions"] = [r.id for r in model.reactions()]
+        results_growth_dependent["metabolites"] = [m.id for m in model.metabolites()]
+        results_growth_dependent["genes"] = [g.id for g in model.genes()]
+        results_growth_dependent["compartments"] = list(model.compartments())
+        results_growth_dependent["essential"] = [r.id for r in model.knockout_growth()]
+        results_growth_dependent["optimal_essential"] = [
+            r.id for r in model.optimal_growth_essential_reactions()
+        ]
         # growth dependent values
-        results_growth_dependent['index'].append('Initial')
-        results_growth_dependent['reversible'].append(list(reversible_initial))
-        results_growth_dependent['dead'].append(list(dead_reactions_initial))
-        results_growth_dependent['non_reversible'].append(list(non_reversible_initial))
-        results_growth_dependent['chokepoints'].append(list(chokepoints_initial))
-        results_growth_dependent['essential_reactions'].append(list(essential_reactions_initial))
-        results_growth_dependent['fva_result'].append([])
+        results_growth_dependent["index"].append("Initial")
+        results_growth_dependent["reversible"].append(list(reversible_initial))
+        results_growth_dependent["dead"].append(list(dead_reactions_initial))
+        results_growth_dependent["non_reversible"].append(list(non_reversible_initial))
+        results_growth_dependent["chokepoints"].append(list(chokepoints_initial))
+        results_growth_dependent["essential_reactions"].append(
+            list(essential_reactions_initial)
+        )
+        results_growth_dependent["fva_result"].append([])
 
         # growth essential reactions are computed on the initial model, as FVA is not mandatory for the computation
         # and one execution of the knock-out of each reaction (method) is enough.
         logger.print("Computing growth dependent essential reactions")
         for i in range(0, len(FRAC)):
             model.find_growth_essential_reactions(FRAC[i])
-            growth_essential_reactions = set([r.id for r in model.growth_essential_reactions()])
-            results_growth_dependent['essential_reactions'].append(list(growth_essential_reactions))
+            growth_essential_reactions = set(
+                [r.id for r in model.growth_essential_reactions()]
+            )
+            results_growth_dependent["essential_reactions"].append(
+                list(growth_essential_reactions)
+            )
 
         y = 1
         for i in range(0, len(FRAC)):
 
-            model = read_model(model_path, objective=objective, processes=self.__processes)
+            model = read_model(
+                model_path, objective=objective, processes=self.__processes
+            )
 
-            logger.print("Running Flux Variability Analysis with fraction: " + str(FRAC[i]))
+            logger.print(
+                "Running Flux Variability Analysis with fraction: " + str(FRAC[i])
+            )
             errors_fva = model.fva(update_flux=True, threshold=FRAC[i])
 
             if errors_fva != []:
-                logger.print("Could not run Flux Variability Analysis: " + str(errors_fva[0]))
+                logger.print(
+                    "Could not run Flux Variability Analysis: " + str(errors_fva[0])
+                )
                 err_msg = "Error running FVA: " + str(errors_fva[0])
-                results_growth_dependent['index'].append(str(FRAC[i]))
-                results_growth_dependent['reversible'].append(err_msg)
-                results_growth_dependent['dead'].append(err_msg)
-                results_growth_dependent['non_reversible'].append(err_msg)
-                results_growth_dependent['chokepoints'].append(err_msg)
-                results_growth_dependent['fva_result'].append(err_msg)
+                results_growth_dependent["index"].append(str(FRAC[i]))
+                results_growth_dependent["reversible"].append(err_msg)
+                results_growth_dependent["dead"].append(err_msg)
+                results_growth_dependent["non_reversible"].append(err_msg)
+                results_growth_dependent["chokepoints"].append(err_msg)
+                results_growth_dependent["fva_result"].append(err_msg)
                 continue
 
             fva_dead_reactions = set([r.id for r in model.dead_reactions()])
@@ -186,19 +228,23 @@ class FacadeUtils:
             model.find_chokepoints(exclude_dead_reactions=True)
             chokepoints = set(model.chokepoint_reactions())
 
-            results_growth_dependent['index'].append(str(FRAC[i]))
-            results_growth_dependent['reversible'].append(list(fva_reversible))
-            results_growth_dependent['dead'].append(list(fva_dead_reactions))
-            results_growth_dependent['non_reversible'].append(list(non_reversible))
-            results_growth_dependent['chokepoints'].append(list(chokepoints))
-            results_growth_dependent['fva_result'].append(
-                [(r.id, upper, lower) for (r, upper, lower) in model.get_fva()])
+            results_growth_dependent["index"].append(str(FRAC[i]))
+            results_growth_dependent["reversible"].append(list(fva_reversible))
+            results_growth_dependent["dead"].append(list(fva_dead_reactions))
+            results_growth_dependent["non_reversible"].append(list(non_reversible))
+            results_growth_dependent["chokepoints"].append(list(chokepoints))
+            results_growth_dependent["fva_result"].append(
+                [(r.id, upper, lower) for (r, upper, lower) in model.get_fva()]
+            )
 
         # Blocked reactions are equal to dead reactions with gamma = 0.0 (i.e. fraction of optimum = 0.0)
-        results_growth_dependent['blocked'] = results_growth_dependent['dead'][1]
+        results_growth_dependent["blocked"] = results_growth_dependent["dead"][1]
 
         # generate generic model data
-        results_growth_dependent = {**results_growth_dependent, **self.__generate_model_info_dict(model)}
+        results_growth_dependent = {
+            **results_growth_dependent,
+            **self.__generate_model_info_dict(model),
+        }
 
         return results_growth_dependent
 
@@ -212,8 +258,8 @@ class FacadeUtils:
 
     def generate_growth_dependent_html_report(self, results_growth_dependent):
         # cobra model not json serializable
-        del results_growth_dependent['model']
-        return generate_html_template(results_growth_dependent, 'template.html')
+        del results_growth_dependent["model"]
+        return generate_html_template(results_growth_dependent, "template.html")
 
     def generate_critical_cp_html_report(self, critical_cp_results):
         data = {}
@@ -222,16 +268,20 @@ class FacadeUtils:
         data["fva"] = encoder.encode(critical_cp_results["fva"])
         data["dem"] = encoder.encode(critical_cp_results["dem"])
         data["fva_dem"] = encoder.encode(critical_cp_results["fva_dem"])
-        return generate_html_template(critical_cp_results, 'template_cp.html', default=encoder.default)
+        return generate_html_template(
+            critical_cp_results, "template_cp.html", default=encoder.default
+        )
 
     def run_sensibility_analysis(self, model_path, print_f, arg1, arg2, objective=None):
         warnings.warn(
             "run_sensibility_analysis() is deprecated, use instead:\n"
             + "    results = facadeUtils.compute_growth_dependent_chokepoints(...) \n"
             + "    xlwt_workbook = facadeUtils.generate_growth_dependent_spreadsheet(result)",
-            DeprecationWarning
+            DeprecationWarning,
         )
-        results_growth_dependent = self.compute_growth_dependent_chokepoints(model_path, print_f, arg1, arg2, objective)
+        results_growth_dependent = self.compute_growth_dependent_chokepoints(
+            model_path, print_f, arg1, arg2, objective
+        )
 
         s = xlwt.Workbook()
         s = self.__generate_sheet_sensibility_analysis(s, results_growth_dependent)
@@ -241,7 +291,7 @@ class FacadeUtils:
         return sObject
 
     def compute_critical_points(
-            self, model_path, print_f, arg1, arg2, objective=None, fraction=1.0
+        self, model_path, print_f, arg1, arg2, objective=None, fraction=1.0
     ):
         print_f("Reading model...", arg1, arg2)
         model = CobraMetabolicModel(model_path)
@@ -341,8 +391,8 @@ class FacadeUtils:
 
         result = {}
         result["initial"] = model.get_state("initial")
-        result["dem"]     = model.get_state("dem")
-        result["fva"]     = model.get_state("fva")
+        result["dem"] = model.get_state("dem")
+        result["fva"] = model.get_state("fva")
         result["fva_dem"] = model.get_state("fva_dem")
         # include general model info computed previously
         result = {**result, **general_info}
@@ -352,8 +402,8 @@ class FacadeUtils:
     def generate_critical_cp_spreadsheet(self, critical_cp_results):
 
         initial = critical_cp_results["initial"]
-        fva     = critical_cp_results["fva"]
-        dem     = critical_cp_results["dem"]
+        fva = critical_cp_results["fva"]
+        dem = critical_cp_results["dem"]
         fva_dem = critical_cp_results["fva_dem"]
 
         s = Spreadsheet()
@@ -365,22 +415,16 @@ class FacadeUtils:
             fva,
             fva_dem,
         )
-        s.spreadsheet_write_reactions(
-            initial, "reactions", ordered=True
-        )
+        s.spreadsheet_write_reactions(initial, "reactions", ordered=True)
         s.spreadsheet_write_metabolites(
             initial,
             "metabolites",
             ordered=True,
             print_reactions=True,
         )
-        s.spreadsheet_write_genes(
-            initial, "genes", ordered=True, print_reactions=True
-        )
+        s.spreadsheet_write_genes(initial, "genes", ordered=True, print_reactions=True)
 
-        s.spreadsheet_write_reactions(
-            fva, "reactions_FVA", ordered=True
-        )
+        s.spreadsheet_write_reactions(fva, "reactions_FVA", ordered=True)
         s.spreadsheet_write_metabolites(
             fva,
             "metabolites_FVA",
@@ -401,9 +445,7 @@ class FacadeUtils:
             fva,
             fva_dem,
         )
-        s.spreadsheet_write_summary_metabolites(
-            "dead-end", initial, fva
-        )
+        s.spreadsheet_write_summary_metabolites("dead-end", initial, fva)
         s.spreadsheet_write_chokepoints_genes(
             "comparison",
             initial,
@@ -430,7 +472,6 @@ class FacadeUtils:
 
         return s
 
-
     def run_summary_model(
         self, model_path, print_f, arg1, arg2, objective=None, fraction=1.0
     ):
@@ -438,12 +479,13 @@ class FacadeUtils:
             "run_summary_model() is deprecated, use instead:\n"
             + "    results = facadeUtils.compute_critical_points(...) \n"
             + "    xlwt_workbook = facadeUtils.generate_critical_cp_spreadsheet(result)",
-            DeprecationWarning
+            DeprecationWarning,
         )
 
-        results = self.compute_critical_points(model_path, print_f, arg1, arg2, objective, fraction)
+        results = self.compute_critical_points(
+            model_path, print_f, arg1, arg2, objective, fraction
+        )
         return self.generate_critical_cp_spreadsheet(results)
-
 
     def find_and_remove_dem(self, model_path):
         model = CobraMetabolicModel(model_path)

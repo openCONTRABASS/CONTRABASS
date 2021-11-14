@@ -13,7 +13,9 @@ class Reaction:
     metabolites = None
     genes = None
 
-    def __init__(self, id, name, reaction, upper_bound, lower_bound, gene_reaction_rule):
+    def __init__(
+        self, id, name, reaction, upper_bound, lower_bound, gene_reaction_rule
+    ):
         self.id = id
         self.name = name
         self.reaction = reaction
@@ -28,6 +30,7 @@ class Reaction:
 
     def add_gene(self, genes):
         self.genes.append(genes)
+
 
 class Metabolite:
     id = None
@@ -44,6 +47,7 @@ class Metabolite:
     def add_reaction(self, reaction):
         self.reactions.append(reaction)
 
+
 class Gene:
     id = None
     name = None
@@ -56,6 +60,7 @@ class Gene:
 
     def add_reaction(self, reaction):
         self.reactions.append(reaction)
+
 
 class State:
     __id = None
@@ -167,21 +172,28 @@ class State:
     def to_json(self):
         return {
             "id": self.__id,
-            "objective" : self.__objective,
+            "objective": self.__objective,
             "objective_value": self.__objective_value,
-            "reactions" : [r.id for r in self.__reactions],
+            "reactions": [r.id for r in self.__reactions],
             "metabolites": [m.id for m in self.__metabolites],
             "genes": [g.id for g in self.__genes],
-            "dem": [m.id for m in list(itertools.chain.from_iterable(self.__dem.values()))],
+            "dem": [
+                m.id for m in list(itertools.chain.from_iterable(self.__dem.values()))
+            ],
             "chokepoints": [(r.id, m.id) for (r, m) in self.__chokepoints],
-            "fva": [(reaction.id, upper, lower) for (reaction, upper, lower) in self.__fva],
+            "fva": [
+                (reaction.id, upper, lower) for (reaction, upper, lower) in self.__fva
+            ],
             "essential_genes": [g.id for g in self.__essential_genes],
-            "essential_genes_reactions": [r.id for r in self.__essential_genes_reactions],
+            "essential_genes_reactions": [
+                r.id for r in self.__essential_genes_reactions
+            ],
             "knockout_growth": [(r.id, g) for r, g in self.__knockout_growth.items()],
-            "essential_reactions":  self.__essential_reactions,
+            "essential_reactions": self.__essential_reactions,
             "dead_reactions": self.__dead_reactions,
-            "reversible_reactions": self.__reversible_reactions
+            "reversible_reactions": self.__reversible_reactions,
         }
+
 
 class CobraMetabolicStateBuilder:
 
@@ -245,10 +257,19 @@ class CobraMetabolicStateBuilder:
     def metabolic_network(self, model):
         metabolites = {}
         for metabolite in model.metabolites():
-            metabolites[metabolite.id] = Metabolite(metabolite.id, metabolite.name, metabolite.compartment)
+            metabolites[metabolite.id] = Metabolite(
+                metabolite.id, metabolite.name, metabolite.compartment
+            )
         reactions = {}
         for reaction in model.reactions():
-            reactions[reaction.id] = Reaction(reaction.id, reaction.name, reaction.reaction, reaction.upper_bound, reaction.lower_bound, reaction.gene_reaction_rule)
+            reactions[reaction.id] = Reaction(
+                reaction.id,
+                reaction.name,
+                reaction.reaction,
+                reaction.upper_bound,
+                reaction.lower_bound,
+                reaction.gene_reaction_rule,
+            )
         genes = {}
         for gene in model.genes():
             genes[gene.id] = Gene(gene.id, gene.name)
@@ -273,8 +294,11 @@ class CobraMetabolicStateBuilder:
                 new_reaction = reactions[reaction.id]
                 new_metabolite.add_reaction(new_reaction)
 
-        return (list(metabolites.values()), list(reactions.values()), list(genes.values()))
-
+        return (
+            list(metabolites.values()),
+            list(reactions.values()),
+            list(genes.values()),
+        )
 
     def dem(self, model):
         result = None
@@ -282,7 +306,9 @@ class CobraMetabolicStateBuilder:
         if dem is not None:
             result = {}
             for compartment in dem.keys():
-                list_c = [self.metabolites[metabolite.id] for metabolite in dem[compartment]]
+                list_c = [
+                    self.metabolites[metabolite.id] for metabolite in dem[compartment]
+                ]
                 result[compartment] = list_c
         return result
 
@@ -292,7 +318,9 @@ class CobraMetabolicStateBuilder:
         if chokepoints is not None:
             result = []
             for (reaction, metabolite) in chokepoints:
-                result.append((self.reactions[reaction.id], self.metabolites[metabolite.id]))
+                result.append(
+                    (self.reactions[reaction.id], self.metabolites[metabolite.id])
+                )
         return result
 
     def fva(self, model):
@@ -330,7 +358,9 @@ class CobraMetabolicStateBuilder:
                         if reaction.id not in result:
                             result[self.reactions[reaction.id]] = [self.genes[gen.id]]
                         else:
-                            result[self.reactions[reaction.id]].append(self.genes[gen.id])
+                            result[self.reactions[reaction.id]].append(
+                                self.genes[gen.id]
+                            )
             return result
         except Exception:
             return {}
@@ -363,4 +393,3 @@ class StateEncoder(JSONEncoder):
         if isinstance(o, State):
             return o.to_json()
         return json.JSONEncoder.default(self, o)
-

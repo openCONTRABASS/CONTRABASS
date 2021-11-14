@@ -29,11 +29,10 @@ LOGGER_MSG = "Executing cli file: {} {}"
 
 TEST_MODEL = "data/MODEL1108160000_url.xml"
 INCORRECTLY_FORMATED = "data/incorrectly_formatted.xml"
-FINDCPCLI_PATH = os.path.abspath("../scripts/contrabass")
+FINDCPCLI_PATH = os.path.abspath("../../scripts/contrabass")
 
 OUTPUT_SPREADSHEET_TEST = "data/test_spreadsheet.xls"
 OUTPUT_SPREADSHEET_TEST_CP = "data/test_spreadsheet_cp.xls"
-
 
 
 def generate_test_no_args():
@@ -54,7 +53,7 @@ def generate_test_no_args():
 
 
 def generate_test_incorrect_input_model():
-    
+
     try:
         params = ["-i", INCORRECTLY_FORMATED, "-o", OUTPUT_SPREADSHEET_TEST]
 
@@ -102,7 +101,6 @@ def generate_test_verbose_chokepoint_computation_on_model():
     f.close()
 
 
-
 def generate_test_verbose_generate_new_models():
     params = [
         "-i",
@@ -127,4 +125,3 @@ generate_test_incorrect_input_model()
 generate_test_verbose_output_on_model()
 generate_test_verbose_chokepoint_computation_on_model()
 generate_test_verbose_generate_new_models()
-

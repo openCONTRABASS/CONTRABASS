@@ -2,7 +2,7 @@
 3. Pseudocode
 ===============
 
-The following section includes pseudocode of some of the main operations performed by ``findCPcli``.
+The following section includes pseudocode of some of the main operations performed by ``contrabass``.
 
 - Find chokepoints on a model
 .. code-block::

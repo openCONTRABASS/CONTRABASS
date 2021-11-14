@@ -1,5 +1,4 @@
 class CustomLogger:
-
     def __init__(self, print_function, args1, args2):
         self.print_function = print_function
         self.args1 = args1

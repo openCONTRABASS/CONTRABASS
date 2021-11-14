@@ -1,11 +1,11 @@
 [![PyPI version](https://badge.fury.io/py/findCPcli.svg)](https://badge.fury.io/py/findCPcli) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![CI-CD](https://github.com/findCP/findCPcli/actions/workflows/main.yml/badge.svg)](https://github.com/findCP/findCPcli/actions/workflows/main.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=findCP_findCPcli&metric=alert_status)](https://sonarcloud.io/dashboard?id=findCP_findCPcli) [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-## CONTRABASS - Constraint-based models vulnerabilities analysis
+## CONTRABASS - Constraint-based model vulnerabilities analysis
 
-```CONTRABASS``` is a command line python-tool for the computation of chokepoint reactions in genome-scale metabolic models. 
-The main purpose of the tool is to compute chokepoints by taking into account both the topology and the dynamic information of the network. In addition to the computation of chokepoints, findCPcli can compute and remove dead-end metabolites, find essential reactions and update the flux bounds of the reactions according to the results of Flux Variability Analysis. 
+```CONTRABASS``` is a command line python-tool for the computation of vulnerabilities reactions in genome-scale metabolic models. 
+The main purpose of the tool is to compute vulnerabilities by taking into account both the topology and the dynamic information of the network. In addition to the computation of chokepoints, CONTRABASS can compute and remove dead-end metabolites, find essential reactions and update the flux bounds of the reactions according to the results of Flux Variability Analysis. 
 
-CONTRABASS takes as input an SBML files of genome-scale models, and provides as output a spreadsheet file with the results of the chokepoint computation.
+CONTRABASS takes as input an SBML files of genome-scale models, and provides as output a spreadsheet file and html report file with the results of the vulnerabilities computation.
 
 **Chokepoint reactions:** Chokepoint reactions are those reactions that are either the unique consumer or the only producer of a given metabolite. CONTRABASS makes use of the flux bounds of the model to determine consumer and producer reactions, and in turn, to compute chokepoint reactions.
 
@@ -17,13 +17,13 @@ CONTRABASS takes as input an SBML files of genome-scale models, and provides as 
 _Figure:_ Chokepoint reactions and dead-end metabolites example:
 ![Chokepoint reactions and Dead-end metabolites example](docs/chokepoints_example.png)
 
-The computation of chokepoints can also be exploited programmatically via the [Low Level API](#low-level-api) which is based on [COBRApy](https://github.com/opencobra/cobrapy).
+The computation of vulnerabilities can also be exploited programmatically via the [Low Level API](#low-level-api) which is based on [COBRApy](https://github.com/opencobra/cobrapy).
 
 
 ## Table of Contents
 - [License](#license)
-- [Pseudocode](#pseudocode)
 - [Install](#Install)
+- [Quickstart](#Quickstart)
 - [Documentation](#documentation)
 - [Tool parameters](#tool-parameters)
 - [Low Level API](#low-level-api)
@@ -47,6 +47,20 @@ Oarga et al. **Growth Dependent Computation of Chokepoints in Metabolic Networks
 $ pip install contrabass
 ```
 
+## Quickstart
+
+Generate report on vulnerabilities on input model ```MODEL.xml```
+
+```shell
+$ contrabass report critial-reactions MODEL.xml
+```
+
+Generate report on growth-dependent reactions on input model ```MODEL.xml```
+
+```shell
+$ contrabass report growth-dependent-reactions MODEL.xml
+```
+
 ## Documentation
 
 Documentation is available at [readthedocs](https://findcpcli.readthedocs.io/en/latest/) and can also be [downloaded](https://findcpcli.readthedocs.io/_/downloads/en/latest/pdf/). 
@@ -59,7 +73,7 @@ For a detailes description of the operations see the [documentation](https://fin
 
 ```shell
 $ contrabass
-Usage: python -m contrabass.cli.main [OPTIONS] COMMAND [ARGS]...
+Usage: contrabass [OPTIONS] COMMAND [ARGS]...
 
   Compute vulnerabilities on constraint-based models
 
@@ -74,8 +88,7 @@ Commands:
 
 ## Low Level API
 
-The computation of chokepoints can also be exploited via [findCPcore](https://github.com/findCP/findCPcore) which is used by findCPcli. 
-[findCPcore](https://github.com/findCP/findCPcore) documentation can be found at [readthedocs](https://findcpcore.readthedocs.io/en/latest/).
+The computation of vulnerabilities can also be exploited via the COBRApy based low level API. For further information see [Low Level API documentation](https://findcpcore.readthedocs.io/en/latest/).
 
 Example of network refinement and chokepoint computation:
 ```python
@@ -99,7 +112,7 @@ model.chokepoints()
 
 ## Contributing
 
-Feel free to dive in! [Open an issue](https://github.com/findCP/findCPcli/issues/new) or submit PRs.
+Feel free to dive in! [Open an issue](https://github.com/openCONTRABASS/CONTRABASS/issues/new) or submit PRs.
 
 Standard Readme follows the [Contributor Covenant](http://contributor-covenant.org/version/1/3/0/) Code of Conduct.
 

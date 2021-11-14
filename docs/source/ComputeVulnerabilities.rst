@@ -1,19 +1,25 @@
 
-4. Compute chokepoints
-===================
+4. Compute vulnerabilities
+======================
 
-Given a genome-scale model in SBML format, findCPcli computes chokepoints, dead-end metabolites, essential reactions, and essential genes, and saves the results in a spreadsheet. findCPcli can be run as follows, where ``model.xml`` is the file with the SBML model and ``results.xls`` is the file where the results will be saved.
+Given a genome-scale model in SBML format, contrabass computes chokepoints, dead-end metabolites, essential reactions, and essential genes, and saves the results in a spreadsheet report and a html report.
+
+Contrabass can be run as follows, where ``MODEL.xml`` is the file with the SBML model.
 
 ::
 
-    $ findCPcli -i model.xml -o results.xls 
+    $ contrabass report critical-reactions MODEL.xml
 
 
-The following figure shows the pipeline of the chokepoint computation process. For a given SBML file, computations are performed on 4 models: i) model in the SBML file; ii) model without DEM; iii) model refined with FVA, i.e. with flux bounds updated according to FVA; and iv) model refined with FVA and without DEM.
+The following figure shows the pipeline of the chokepoint computation process. For a given SBML file, computations are performed on 4 models:
+    1.  model in the SBML file
+    2. model without DEM;
+    3. model refined with FVA, i.e. with flux bounds updated according to FVA;
+    4. model refined with FVA and without DEM.
 
 .. image:: _static/chokepoint_pipeline.png
     :align: center
-    :alt: alternate text
+    :alt: pipeline
 
 4.1. Spreadsheet data
 **********************
