@@ -30,7 +30,9 @@ jobs:
       run: |
         pip install pytest
         pip install pytest-cov
-        ./test.sh
+        py.test --cov=./ --cov-report=xml -s test/test_core/test_CobraMetabolicModel.py
+        py.test --cov=./ --cov-report=xml -s test/test_cli/test_contrabass_cli.py 
+
     - name: "Upload coverage to Codecov"
       uses: codecov/codecov-action@v2
       with:
