@@ -1,4 +1,5 @@
 cobra==0.16.0
+click
 depinfo
 python-dotenv
 future
