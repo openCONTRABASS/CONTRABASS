@@ -6,7 +6,6 @@ on:
       - master
     tags:
       - '*'
-
 jobs:
  test:
     runs-on: ubuntu-latest
@@ -14,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.5, 3.6, 3.7]
+        python-version: [3.7]
 
     steps:
     - uses: actions/checkout@v2
@@ -31,24 +30,21 @@ jobs:
       run: |
         pip install pytest
         pip install pytest-cov
-        cd test
-        pytest
+        bash test.sh
+
 
  sonarcloud:
+    name: SonarCloud
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-      with:
-        # Disabling shallow clone is recommended for improving relevancy of reporting
-        fetch-depth: 0
-    - name: Setup sonar repository
-      run: |
-        bash sonar.sh
-    - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 
  release:

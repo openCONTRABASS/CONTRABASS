@@ -1,4 +1,4 @@
-[![PyPI version](https://badge.fury.io/py/findCPcli.svg)](https://badge.fury.io/py/findCPcli) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![CI-CD](https://github.com/findCP/findCPcli/actions/workflows/main.yml/badge.svg)](https://github.com/findCP/findCPcli/actions/workflows/main.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=findCP_findCPcli&metric=alert_status)](https://sonarcloud.io/dashboard?id=findCP_findCPcli) [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![PyPI version](https://badge.fury.io/py/findCPcli.svg)](https://badge.fury.io/py/findCPcli) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![CI-CD](https://github.com/openCONTRABASS/CONTRABASS/actions/workflows/main.yml/badge.svg)](https://github.com/findCP/findCPcli/actions/workflows/main.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=openCONTRABASS_CONTRABASS&metric=alert_status)](https://sonarcloud.io/dashboard?id=findCP_findCPcli) [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) [![Documentation Status](https://readthedocs.org/projects/contrabass/badge/?version=latest)](https://contrabass.readthedocs.io/en/latest/?badge=latest)
 
 ## CONTRABASS - Constraint-based model vulnerabilities analysis
 
@@ -63,13 +63,13 @@ $ contrabass report growth-dependent-reactions MODEL.xml
 
 ## Documentation
 
-Documentation is available at [readthedocs](https://findcpcli.readthedocs.io/en/latest/) and can also be [downloaded](https://findcpcli.readthedocs.io/_/downloads/en/latest/pdf/). 
+Documentation is available at [readthedocs](https://contrabass.readthedocs.io/en/latest/) and can also be [downloaded](https://contrabass.readthedocs.io/_/downloads/en/latest/pdf/). 
 The previous links include examples and descriptions of the operations that can be performed with the tool.
 
 ## Tool parameters
 
 More information about the parameters of the tool can be obtained by executing ``contrabass -h``. 
-For a detailes description of the operations see the [documentation](https://findcpcli.readthedocs.io/en/latest/). 
+For a detailed description of the operations see the [documentation](https://contrabass.readthedocs.io/en/latest/). 
 
 ```shell
 $ contrabass
@@ -88,7 +88,7 @@ Commands:
 
 ## Low Level API
 
-The computation of vulnerabilities can also be exploited via the COBRApy based low level API. For further information see [Low Level API documentation](https://findcpcore.readthedocs.io/en/latest/).
+The computation of vulnerabilities can also be exploited via the COBRApy based low level API. For further information see [Low Level API documentation](https://contrabass.readthedocs.io/en/latest/CORE.html).
 
 Example of network refinement and chokepoint computation:
 ```python
