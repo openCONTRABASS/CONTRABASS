@@ -69,8 +69,7 @@ def __compare_two_spreadsheets_content(file1, file2):
 """
     Assure correct output and no errors running correct model
 """
-
-
+@pytest.mark.skip(reason="skipped as it takes to much to run on github action. Running it locally is suggested")
 def test_verbose_output_on_model():
     params = [
         "report",
@@ -101,8 +100,7 @@ def test_verbose_output_on_model():
 """
     Assure correct output and no errors running correct model
 """
-
-
+@pytest.mark.skip(reason="skipped as it takes to much to run on github action. Running it locally is suggested")
 def test_verbose_chokepoint_computation_on_model():
     params = [
         "report",
@@ -135,8 +133,7 @@ def test_verbose_chokepoint_computation_on_model():
 """
     Assure correct output and no errors generating new models
 """
-
-
+@pytest.mark.skip(reason="")
 def test_verbose_generate_new_models():
     params = [
         "new-model",
