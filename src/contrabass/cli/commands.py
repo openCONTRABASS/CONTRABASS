@@ -66,7 +66,6 @@ def new_model():
 @click.option(
     "--verbose",
     "-v",
-    type=bool,
     help="Print feedback while running.",
 )
 @click.option(
@@ -99,12 +98,14 @@ def new_model():
     help="Fraction of optimum growth to be used in Flux Variability Analysis. Value must be between 0.0 and 1.0",
 )
 def critical_reactions(
-    model, output_spreadsheet, output_html_report, verbose, objective, fraction
+        model, output_spreadsheet, output_html_report, verbose, objective, fraction
 ):
     # Default values
     if fraction is None:
         fraction = 1.0
     fraction = validate_number(fraction)
+
+    verbose = False if verbose is None else True
 
     validate_input_model(model)
     validate_output_spread(output_spreadsheet)
@@ -132,7 +133,6 @@ def critical_reactions(
 @click.option(
     "--verbose",
     "-v",
-    type=bool,
     help="Print feedback while running.",
 )
 @click.option(
@@ -158,12 +158,14 @@ def critical_reactions(
     help="Output spreadsheet file with results. Allowed file formats: '.html'. Default value: output.html",
 )
 def growth_dependent_reactions(
-    model,
-    output_spreadsheet,
-    output_html_report,
-    verbose,
-    objective,
+        model,
+        output_spreadsheet,
+        output_html_report,
+        verbose,
+        objective,
 ):
+    verbose = False if verbose is None else True
+
     validate_input_model(model)
     validate_output_spread(output_spreadsheet)
     validate_output_html_path(output_html_report)
@@ -182,7 +184,6 @@ def growth_dependent_reactions(
 @click.option(
     "--verbose",
     "-v",
-    type=bool,
     help="Print feedback while running.",
 )
 @click.option(
@@ -205,19 +206,21 @@ def growth_dependent_reactions(
     default=DEFAULT_MODEL_FILE,
     metavar="OUTPUT-MODEL",
     help="Output model file. Allowed file formats: '.xml' '.json' '.yml'. Default value: "
-    + DEFAULT_MODEL_FILE,
+         + DEFAULT_MODEL_FILE,
 )
 def fva_constrained(
-    model,
-    verbose,
-    objective,
-    fraction,
-    output_model,
+        model,
+        verbose,
+        objective,
+        fraction,
+        output_model,
 ):
     """
     Export a new model with its (maximum and minimum )flux bounds replaced with the
     constrained flux values obtained with Flux Variability Analysis.
     """
+    verbose = False if verbose is None else True
+
     validate_input_model(model)
     validate_output_model(output_model)
 
@@ -235,7 +238,6 @@ def fva_constrained(
 @click.option(
     "--verbose",
     "-v",
-    type=bool,
     help="Print feedback while running.",
 )
 @click.option(
@@ -258,20 +260,22 @@ def fva_constrained(
     default=DEFAULT_MODEL_FILE,
     metavar="OUTPUT-MODEL",
     help="Output model file. Allowed file formats: '.xml' '.json' '.yml'. Default value: "
-    + DEFAULT_MODEL_FILE,
+         + DEFAULT_MODEL_FILE,
 )
 def without_dem(
-    model,
-    verbose,
-    objective,
-    fraction,
-    output_model,
+        model,
+        verbose,
+        objective,
+        fraction,
+        output_model,
 ):
     """
     Export a new model where Dead-End Metabolites have been removed.
     Dead-End Metabolites are removed iteratively, this is, if a reactions remains
     without metabolites it is also removed from the model.
     """
+    verbose = False if verbose is None else True
+
     validate_input_model(model)
     validate_output_model(output_model)
 
@@ -289,7 +293,6 @@ def without_dem(
 @click.option(
     "--verbose",
     "-v",
-    type=bool,
     help="Print feedback while running.",
 )
 @click.option(
@@ -312,20 +315,22 @@ def without_dem(
     default=DEFAULT_MODEL_FILE,
     metavar="OUTPUT-MODEL",
     help="Output model file. Allowed file formats: '.xml' '.json' '.yml'. Default value: "
-    + DEFAULT_MODEL_FILE,
+         + DEFAULT_MODEL_FILE,
 )
 def fva_constrained_without_dem(
-    model,
-    verbose,
-    objective,
-    fraction,
-    output_model,
+        model,
+        verbose,
+        objective,
+        fraction,
+        output_model,
 ):
     """
     Export a new model with its (maximum and minimum) flux bounds replaced with the
     constrained flux values obtained with Flux Variability Analysis.
     In addition, Dead-End Metabolites are removed iteratively after the flux update.
     """
+    verbose = False if verbose is None else True
+
     validate_input_model(model)
     validate_output_model(output_model)
 
@@ -343,13 +348,13 @@ def license():
 
 
 def run(
-    task,
-    model_path,
-    output_path,  # output spreadsheet report file or in case of new model, the output model path
-    output_path_html,
-    verbose,
-    objective=None,
-    fraction=1.0,
+        task,
+        model_path,
+        output_path,  # output spreadsheet report file or in case of new model, the output model path
+        output_path_html,
+        verbose,
+        objective=None,
+        fraction=1.0,
 ):
     try:
         if task == TASK_CRITICAL_REACTIONS:

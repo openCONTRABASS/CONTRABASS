@@ -1,7 +1,8 @@
-[![PyPI version](https://badge.fury.io/py/findCPcli.svg)](https://badge.fury.io/py/findCPcli) 
+[![PyPI version](https://badge.fury.io/py/contrabass.svg)](https://badge.fury.io/py/contrabass) 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) 
-[![CI-CD](https://github.com/openCONTRABASS/CONTRABASS/actions/workflows/main.yml/badge.svg)](https://github.com/findCP/findCPcli/actions/workflows/main.yml) 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=openCONTRABASS_CONTRABASS&metric=alert_status)](https://sonarcloud.io/dashboard?id=findCP_findCPcli) 
+[![CI-CD](https://github.com/openCONTRABASS/CONTRABASS/actions/workflows/main.yml/badge.svg)](https://github.com/openCONTRABASS/CONTRABASS/actions/workflows/main.yml)
+[![codecov](https://codecov.io/gh/openCONTRABASS/CONTRABASS/branch/main/graph/badge.svg?token=C9F6FT0PAV)](https://codecov.io/gh/openCONTRABASS/CONTRABASS)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=openCONTRABASS_CONTRABASS&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=openCONTRABASS_CONTRABASS) 
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme) 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) 
 [![Documentation Status](https://readthedocs.org/projects/contrabass/badge/?version=latest)](https://contrabass.readthedocs.io/en/latest/?badge=latest) 
@@ -51,7 +52,7 @@ Oarga et al. **Growth Dependent Computation of Chokepoints in Metabolic Networks
 ## Install
 ```CONTRABASS``` can be installed via **pip** package manager:
 ```shell
-$ pip install contrabass
+  $ pip install contrabass
 ```
 
 ## Quickstart
@@ -59,13 +60,13 @@ $ pip install contrabass
 Generate report on vulnerabilities on input model ```MODEL.xml```
 
 ```shell
-$ contrabass report critial-reactions MODEL.xml
+  $ contrabass report critial-reactions MODEL.xml
 ```
 
 Generate report on growth-dependent reactions on input model ```MODEL.xml```
 
 ```shell
-$ contrabass report growth-dependent-reactions MODEL.xml
+  $ contrabass report growth-dependent-reactions MODEL.xml
 ```
 
 ## Documentation
@@ -79,18 +80,19 @@ More information about the parameters of the tool can be obtained by executing `
 For a detailed description of the operations see the [documentation](https://contrabass.readthedocs.io/en/latest/). 
 
 ```shell
-$ contrabass
-Usage: contrabass [OPTIONS] COMMAND [ARGS]...
+  $ contrabass
 
-  Compute vulnerabilities on constraint-based models
-
-Options:
-  -h, --help     Show this message and exit.
-  -V, --version  Show the version and exit.
-
-Commands:
-  new-model  Export refined constraint-based model.
-  report     Compute vulnerabilities on constraint-based models.
+    Usage: contrabass [OPTIONS] COMMAND [ARGS]...
+    
+      Compute vulnerabilities on constraint-based models
+    
+    Options:
+      -h, --help     Show this message and exit.
+      -V, --version  Show the version and exit.
+    
+    Commands:
+      new-model  Export refined constraint-based model.
+      report     Compute vulnerabilities on constraint-based models.
 ```
 
 ## Low Level API
