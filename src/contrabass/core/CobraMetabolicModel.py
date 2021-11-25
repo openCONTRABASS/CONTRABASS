@@ -323,8 +323,6 @@ class CobraMetabolicModel:
             # Default interface
             cobra.core.model.configuration.solver = 'glpk'
 
-            # check if file exists
-            open(path, 'r')
             # read model
             if path[-4:] == ".xml":
                 self.__cobra_model = cobra.io.read_sbml_model(path)

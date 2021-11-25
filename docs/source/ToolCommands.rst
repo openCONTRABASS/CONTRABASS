@@ -1,6 +1,18 @@
 
-8. Tool parameters
+4. Tool commands
 ==================
+
+4.1 Flowchart
+-------------
+
+The next flowchart provides a graphical description of the available operations that can be performed with CONTRABASS and their respective commands, along with the output each command produces:
+
+.. image:: _static/contrabass_flowchart.png
+    :align: center
+    :alt: CONTRABASS flowchart
+
+4.1 Commands and parameters
+---------------------------
 
 More information about the parameters of the tool can be obtained by executing ``contrabass -h``.
 

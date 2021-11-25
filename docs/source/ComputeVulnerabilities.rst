@@ -1,5 +1,5 @@
 
-4. Compute vulnerabilities
+5. Compute vulnerabilities
 ======================
 
 Given a genome-scale model in SBML format, contrabass computes chokepoints, dead-end metabolites, essential reactions, and essential genes, and saves the results in a spreadsheet report and a html report.

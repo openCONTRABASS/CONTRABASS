@@ -43,7 +43,7 @@ def generate_html_template(data, template_name, default=None):
     """
     jinja2 is giving error:
         jinja2.exceptions.TemplateSyntaxError: unexpected char '\\' at 280624
-    on angular produced template in the script section
+    on angular-produced template in the script section
     The following quickfix is implemented as solution: 
         scripts are replaced and then restored after template is parsed.
     """

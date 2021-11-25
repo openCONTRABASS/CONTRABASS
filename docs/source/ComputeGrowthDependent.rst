@@ -1,5 +1,5 @@
 
-5. Compute growth dependent reactions
+6. Compute growth dependent reactions
 =======================================
 
 contrabass can be used to compute `Growth Dependent Chokepoints <https://doi.org/10.1007/978-3-030-60327-4_6>`_  (amongst other reactions) as follows:

@@ -7,6 +7,7 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) 
 [![Documentation Status](https://readthedocs.org/projects/contrabass/badge/?version=latest)](https://contrabass.readthedocs.io/en/latest/?badge=latest) 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/openCONTRABASS/CONTRABASS/HEAD?labpath=docs%2Fsource%2FCORE.ipynb)
+[![DOI](https://zenodo.org/badge/427404496.svg)](https://zenodo.org/badge/latestdoi/427404496)
 
 ## CONTRABASS - Constraint-based model vulnerabilities analysis
 
@@ -33,7 +34,7 @@ The computation of vulnerabilities can also be exploited programmatically via th
 - [Install](#Install)
 - [Quickstart](#Quickstart)
 - [Documentation](#documentation)
-- [Tool parameters](#tool-parameters)
+- [Tool commands](#tool-commands)
 - [Low Level API](#low-level-api)
 - [Maintainers](#maintainers)
 - [Contributing](#contributing)
@@ -42,12 +43,6 @@ The computation of vulnerabilities can also be exploited programmatically via th
 ## License
 
 CONTRABASS is released under [GPLv3 license](LICENSE).
-
-
-For citation purposes please refer to:
-
-Oarga et al. **Growth Dependent Computation of Chokepoints in Metabolic Networks.** International Conference on Computational Methods in Systems Biology. Springer, Cham, 2020. https://doi.org/10.1007/978-3-030-60327-4_6
-
 
 ## Install
 ```CONTRABASS``` can be installed via **pip** package manager:
@@ -74,10 +69,14 @@ Generate report on growth-dependent reactions on input model ```MODEL.xml```
 Documentation is available at [readthedocs](https://contrabass.readthedocs.io/en/latest/) and can also be [downloaded](https://contrabass.readthedocs.io/_/downloads/en/latest/pdf/). 
 The previous links include examples and descriptions of the operations that can be performed with the tool.
 
-## Tool parameters
+## Tool commands
+
+The next flowchart provides a graphical description of the available operations that can be performed with CONTRABASS and their respective commands:
+
+![CONTRABBASS_FLOWCHART](docs/source/_static/contrabass_flowchart.png)
 
 More information about the parameters of the tool can be obtained by executing ``contrabass -h``. 
-For a detailed description of the operations see the [documentation](https://contrabass.readthedocs.io/en/latest/). 
+For a detailed description of the operations see the [documentation](https://contrabass.readthedocs.io/en/latest/ToolCommands). 
 
 ```shell
   $ contrabass

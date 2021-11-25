@@ -30,8 +30,3 @@ Chokepoint reactions and dead-end metabolites example:
 The computation of vulnerabilities can also be exploited programmatically via the Low Level API (see `core <CORE.html>`_) which is based on COBRApy_.
 
 .. _COBRApy: https://github.com/opencobra/cobrapy
-
-
-For citation purposes please refer to:
-
-.. note:: Oarga et al. **Growth Dependent Computation of Chokepoints in Metabolic Networks.** International Conference on Computational Methods in Systems Biology. Springer, Cham, 2020. https://doi.org/10.1007/978-3-030-60327-4_6 .

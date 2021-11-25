@@ -1,5 +1,5 @@
 
-7. Refine model with FVA
+8. Refine model with FVA
 ====================================
 
 ``contrabass`` can generate a new model in which the flux bounds of the reactions have been updated with the values obtained in the computation of FVA .
