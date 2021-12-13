@@ -23,11 +23,10 @@ CONTRABASS takes as input an SBML files of genome-scale models, and provides as 
 **Essential Reactions:** A reaction is considered an essential reaction if its deletion, this is, restricting its flux to zero, causes the objective (e.g. cellular growth) to be zero.
 
 
-_Figure:_ Chokepoint reactions and dead-end metabolites example:
-
-<h1 align="center">
-    <img alt="Example" title="Example" src="https://github.com/openCONTRABASS/CONTRABASS/blob/main/docs/source/_static/chokepoints_example.png" width="500">
-</h1>
+<div align="center">
+    <p>Figure: Chokepoint reactions and dead-end metabolites example:</p>
+    <img alt="Example" title="Example" src="https://github.com/openCONTRABASS/CONTRABASS/blob/main/docs/source/_static/chokepoints_example.png" width="600">
+</div>
 
 The computation of vulnerabilities can also be exploited programmatically via the [Low Level API](#low-level-api) which is based on [COBRApy](https://github.com/opencobra/cobrapy). You can also [try the Low Level API with Binder](https://mybinder.org/v2/gh/openCONTRABASS/CONTRABASS/HEAD?labpath=docs%2Fsource%2FCORE.ipynb).
 
@@ -77,7 +76,7 @@ The previous links include examples and descriptions of the operations that can 
 The next flowchart provides a graphical description of the available operations that can be performed with CONTRABASS and their respective commands:
 
 <h1 align="center">
-    <img alt="flowchart" title="flowchart" src="https://github.com/openCONTRABASS/CONTRABASS/blob/main/docs/source/_static/contrabass_flowchart.png" width="500">
+    <img alt="flowchart" title="flowchart" src="https://github.com/openCONTRABASS/CONTRABASS/blob/main/docs/source/_static/contrabass_flowchart.png" width="550">
 </h1>
 
 More information about the parameters of the tool can be obtained by executing ``contrabass -h``. 
