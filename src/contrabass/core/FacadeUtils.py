@@ -23,6 +23,7 @@ from contrabass.core.Spreadsheet import Spreadsheet
 from contrabass.core.State import StateEncoder
 from contrabass.core.utils.CustomLogger import CustomLogger
 from contrabass.core.util import *
+from contrabass.core.report_utils import *
 
 # import contrabass.core
 # VERSION=contrabass.__version__
@@ -123,7 +124,7 @@ class FacadeUtils:
         # Save metadata
         results = {}
         results["solver"] = str(type(model.model().solver))
-        results["findCPcore_version"] = VERSION
+        results["CONTRABASS_version"] = VERSION
         results["date"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         # save model data
         results["model_identifier"] = model.id()
@@ -162,8 +163,8 @@ class FacadeUtils:
 
         # save model data
         results_growth_dependent["model"] = model
-        results_growth_dependent["reactions"] = [r.id for r in model.reactions()]
-        results_growth_dependent["metabolites"] = [m.id for m in model.metabolites()]
+        results_growth_dependent["reactions"] = simplified_reactions(model.reactions())
+        results_growth_dependent["metabolites"] = simplified_metabolites(model.metabolites())
         results_growth_dependent["genes"] = [g.id for g in model.genes()]
         results_growth_dependent["compartments"] = list(model.compartments())
         results_growth_dependent["essential"] = [r.id for r in model.knockout_growth()]
@@ -183,6 +184,7 @@ class FacadeUtils:
 
         # growth essential reactions are computed on the initial model, as FVA is not mandatory for the computation
         # and one execution of the knock-out of each reaction (method) is enough.
+        # To summarise: growth dependent essential reactions are computed comparing against a fraction of optimal growth
         logger.print("Computing growth dependent essential reactions")
         for i in range(0, len(FRAC)):
             model.find_growth_essential_reactions(FRAC[i])

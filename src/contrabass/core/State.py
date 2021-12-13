@@ -2,6 +2,8 @@ import itertools
 import json
 from json import JSONEncoder
 
+from contrabass.core.report_utils import simplified_reactions, simplified_metabolites, simplified_genes, format_annotation
+
 
 class Reaction:
     id = None
@@ -12,9 +14,10 @@ class Reaction:
     gene_reaction_rule = None
     metabolites = None
     genes = None
+    annotation = None
 
     def __init__(
-        self, id, name, reaction, upper_bound, lower_bound, gene_reaction_rule
+        self, id, name, reaction, upper_bound, lower_bound, gene_reaction_rule, annotation
     ):
         self.id = id
         self.name = name
@@ -24,6 +27,7 @@ class Reaction:
         self.gene_reaction_rule = gene_reaction_rule
         self.metabolites = []
         self.genes = []
+        self.annotation = annotation
 
     def add_metabolite(self, metabolite):
         self.metabolites.append(metabolite)
@@ -37,12 +41,16 @@ class Metabolite:
     name = None
     compartment = None
     reactions = None
+    annotation = None
+    formula = None
 
-    def __init__(self, id, name, compartment):
+    def __init__(self, id, name, compartment, annotation, formula):
         self.id = id
         self.name = name
         self.compartment = compartment
         self.reactions = []
+        self.annotation = annotation
+        self.formula = formula
 
     def add_reaction(self, reaction):
         self.reactions.append(reaction)
@@ -52,11 +60,13 @@ class Gene:
     id = None
     name = None
     reactions = None
+    annotation = None
 
-    def __init__(self, id, name):
+    def __init__(self, id, name, annotation):
         self.id = id
         self.name = name
         self.reactions = []
+        self.annotation = annotation
 
     def add_reaction(self, reaction):
         self.reactions.append(reaction)
@@ -174,9 +184,9 @@ class State:
             "id": self.__id,
             "objective": self.__objective,
             "objective_value": self.__objective_value,
-            "reactions": [r.id for r in self.__reactions],
-            "metabolites": [m.id for m in self.__metabolites],
-            "genes": [g.id for g in self.__genes],
+            "reactions": simplified_reactions(self.__reactions),
+            "metabolites": simplified_metabolites(self.__metabolites),
+            "genes": simplified_genes(self.__genes),
             "dem": [
                 m.id for m in list(itertools.chain.from_iterable(self.__dem.values()))
             ],
@@ -258,7 +268,7 @@ class CobraMetabolicStateBuilder:
         metabolites = {}
         for metabolite in model.metabolites():
             metabolites[metabolite.id] = Metabolite(
-                metabolite.id, metabolite.name, metabolite.compartment
+                metabolite.id, metabolite.name, metabolite.compartment, metabolite.annotation, metabolite.formula
             )
         reactions = {}
         for reaction in model.reactions():
@@ -269,10 +279,11 @@ class CobraMetabolicStateBuilder:
                 reaction.upper_bound,
                 reaction.lower_bound,
                 reaction.gene_reaction_rule,
+                reaction.annotation
             )
         genes = {}
         for gene in model.genes():
-            genes[gene.id] = Gene(gene.id, gene.name)
+            genes[gene.id] = Gene(gene.id, gene.name, gene.annotation)
 
         self.metabolites = metabolites
         self.reactions = reactions
