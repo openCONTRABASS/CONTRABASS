@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 
+import os
 import click
 
 from contrabass.cli.utils import (
@@ -27,6 +28,9 @@ TASK_SAVE_WITH_FVA_DEM = "TASK_SAVE_WITH_FVA_DEM"
 DEFAULT_SPREADSHEET_FILE = "output.xls"
 DEFAULT_HTML_FILE = "output.html"
 DEFAULT_MODEL_FILE = "output.xml"
+
+DEFAULT_SPREADSHEET_EXTENSION = ".xls"
+HTML_EXTENSION = ".html"
 
 LICENSE = """
     contrabass Copyright (C) 2020-2021  Alex Oarga  <718123 at unizar dot es> (University of Zaragoza)
@@ -64,9 +68,11 @@ def new_model():
     # help="Input constrained.based model. Allowed file formats: .xml .json .yml"
 )
 @click.option(
-    "--verbose",
-    "-v",
-    help="Print feedback while running.",
+    "--silent",
+    "-s",
+    is_flag=True,
+    default=False,
+    help="Do not print outputs while running.",
 )
 @click.option(
     "--objective",
@@ -78,17 +84,16 @@ def new_model():
     "--output-spreadsheet",
     "-o",
     type=str,
-    default=DEFAULT_SPREADSHEET_FILE,
     metavar="OUTPUT_SPREADSHEET",
-    help="Output spreadsheet file with results. Allowed file formats: '.xls' '.xlsx' '.ods'. Default value: output.xls",
+    help="Output spreadsheet file with results. Allowed file formats: '.xls' '.xlsx' '.ods'. Default value: "
+         "<INPUT-MODEL>.xls",
 )
 @click.option(
     "--output-html-report",
     "-r",
     type=str,
-    default=DEFAULT_HTML_FILE,
     metavar="OUTPUT_SPREADSHEET",
-    help="Output spreadsheet file with results. Allowed file formats: '.html'. Default value: output.html",
+    help="Output spreadsheet file with results. Allowed file formats: '.html'. Default value: <INPUT-MODEL>.html",
 )
 @click.option(
     "--fraction",
@@ -98,14 +103,18 @@ def new_model():
     help="Fraction of optimum growth to be used in Flux Variability Analysis. Value must be between 0.0 and 1.0",
 )
 def critical_reactions(
-        model, output_spreadsheet, output_html_report, verbose, objective, fraction
+        model, output_spreadsheet, output_html_report, silent, objective, fraction
 ):
     # Default values
     if fraction is None:
         fraction = 1.0
     fraction = validate_number(fraction)
 
-    verbose = False if verbose is None else True
+    if output_spreadsheet is None:
+        output_spreadsheet = os.path.splitext(model)[0] + DEFAULT_SPREADSHEET_EXTENSION
+
+    if output_html_report is None:
+        output_html_report = os.path.splitext(model)[0] + HTML_EXTENSION
 
     validate_input_model(model)
     validate_output_spread(output_spreadsheet)
@@ -117,7 +126,7 @@ def critical_reactions(
         model,
         output_spreadsheet,
         output_html_report,
-        verbose,
+        not silent,
         objective,
         fraction,
     )
@@ -131,9 +140,11 @@ def critical_reactions(
     # help="Input constrained.based model. Allowed file formats: .xml .json .yml"
 )
 @click.option(
-    "--verbose",
-    "-v",
-    help="Print feedback while running.",
+    "--silent",
+    "-s",
+    is_flag=True,
+    default=False,
+    help="Do not print outputs while running.",
 )
 @click.option(
     "--objective",
@@ -145,33 +156,36 @@ def critical_reactions(
     "--output-spreadsheet",
     "-o",
     type=str,
-    default=DEFAULT_SPREADSHEET_FILE,
     metavar="OUTPUT_SPREADSHEET",
-    help="Output spreadsheet file with results. Allowed file formats: '.xls' '.xlsx' '.ods'. Default value: output.xls",
+    help="Output spreadsheet file with results. Allowed file formats: '.xls' '.xlsx' '.ods'. Default value: <INPUT-MODEL>.xls",
 )
 @click.option(
     "--output-html-report",
     "-r",
     type=str,
-    default=DEFAULT_HTML_FILE,
-    metavar="OUTPUT_SPREADSHEET",
-    help="Output spreadsheet file with results. Allowed file formats: '.html'. Default value: output.html",
+    metavar="OUTPUT_HTML",
+    help="Output spreadsheet file with results. Allowed file formats: '.html'. Default value: <INPUT-MODEL>.html",
 )
 def growth_dependent_reactions(
         model,
         output_spreadsheet,
         output_html_report,
-        verbose,
+        silent,
         objective,
 ):
-    verbose = False if verbose is None else True
+
+    if output_spreadsheet is None:
+        output_spreadsheet = os.path.splitext(model)[0] + DEFAULT_SPREADSHEET_EXTENSION
+
+    if output_html_report is None:
+        output_html_report = os.path.splitext(model)[0] + HTML_EXTENSION
 
     validate_input_model(model)
     validate_output_spread(output_spreadsheet)
     validate_output_html_path(output_html_report)
 
     task = TASK_SENSIBILITY
-    run(task, model, output_spreadsheet, output_html_report, verbose, objective, None)
+    run(task, model, output_spreadsheet, output_html_report, not silent, objective, None)
 
 
 @new_model.command()
@@ -182,9 +196,11 @@ def growth_dependent_reactions(
     # help="Input constrained.based model. Allowed file formats: .xml .json .yml"
 )
 @click.option(
-    "--verbose",
-    "-v",
-    help="Print feedback while running.",
+    "--silent",
+    "-s",
+    is_flag=True,
+    default=False,
+    help="Do not print outputs while running.",
 )
 @click.option(
     "--objective",
@@ -203,14 +219,13 @@ def growth_dependent_reactions(
     "--output-model",
     "-o",
     type=str,
-    default=DEFAULT_MODEL_FILE,
     metavar="OUTPUT-MODEL",
     help="Output model file. Allowed file formats: '.xml' '.json' '.yml'. Default value: "
-         + DEFAULT_MODEL_FILE,
+         + "<INPUT-MODEL>-MFVA",
 )
 def fva_constrained(
         model,
-        verbose,
+        silent,
         objective,
         fraction,
         output_model,
@@ -219,13 +234,15 @@ def fva_constrained(
     Export a new model with its (maximum and minimum )flux bounds replaced with the
     constrained flux values obtained with Flux Variability Analysis.
     """
-    verbose = False if verbose is None else True
+
+    if output_model is None:
+        output_model = os.path.splitext(model)[0] + "-MFVA" + ".xml"
 
     validate_input_model(model)
     validate_output_model(output_model)
 
     task = TASK_SAVE_WITH_FVA
-    run(task, model, output_model, None, verbose, objective, fraction)
+    run(task, model, output_model, None, not silent, objective, fraction)
 
 
 @new_model.command()
@@ -236,9 +253,11 @@ def fva_constrained(
     # help="Input constrained.based model. Allowed file formats: .xml .json .yml"
 )
 @click.option(
-    "--verbose",
-    "-v",
-    help="Print feedback while running.",
+    "--silent",
+    "-s",
+    is_flag=True,
+    default=False,
+    help="Do not print outputs while running.",
 )
 @click.option(
     "--objective",
@@ -257,14 +276,13 @@ def fva_constrained(
     "--output-model",
     "-o",
     type=str,
-    default=DEFAULT_MODEL_FILE,
     metavar="OUTPUT-MODEL",
     help="Output model file. Allowed file formats: '.xml' '.json' '.yml'. Default value: "
-         + DEFAULT_MODEL_FILE,
+         + "<INPUT-MODEL>-MNODEM",
 )
 def without_dem(
         model,
-        verbose,
+        silent,
         objective,
         fraction,
         output_model,
@@ -274,13 +292,15 @@ def without_dem(
     Dead-End Metabolites are removed iteratively, this is, if a reactions remains
     without metabolites it is also removed from the model.
     """
-    verbose = False if verbose is None else True
+
+    if output_model is None:
+        output_model = os.path.splitext(model)[0] + "-MNODEM" + ".xml"
 
     validate_input_model(model)
     validate_output_model(output_model)
 
     task = TASK_SAVE_WITHOUT_DEM
-    run(task, model, output_model, None, verbose, objective, fraction)
+    run(task, model, output_model, None, not silent, objective, fraction)
 
 
 @new_model.command()
@@ -291,9 +311,11 @@ def without_dem(
     # help="Input constrained.based model. Allowed file formats: .xml .json .yml"
 )
 @click.option(
-    "--verbose",
-    "-v",
-    help="Print feedback while running.",
+    "--silent",
+    "-s",
+    is_flag=True,
+    default=False,
+    help="Do not print outputs while running.",
 )
 @click.option(
     "--objective",
@@ -312,14 +334,13 @@ def without_dem(
     "--output-model",
     "-o",
     type=str,
-    default=DEFAULT_MODEL_FILE,
     metavar="OUTPUT-MODEL",
     help="Output model file. Allowed file formats: '.xml' '.json' '.yml'. Default value: "
-         + DEFAULT_MODEL_FILE,
+         + "<INPUT-MODEL>-MFVANODEM",
 )
 def fva_constrained_without_dem(
         model,
-        verbose,
+        silent,
         objective,
         fraction,
         output_model,
@@ -329,13 +350,15 @@ def fva_constrained_without_dem(
     constrained flux values obtained with Flux Variability Analysis.
     In addition, Dead-End Metabolites are removed iteratively after the flux update.
     """
-    verbose = False if verbose is None else True
+
+    if output_model is None:
+        output_model = os.path.splitext(model)[0] + "-MFVANODEM" + ".xml"
 
     validate_input_model(model)
     validate_output_model(output_model)
 
     task = TASK_SAVE_WITH_FVA_DEM
-    run(task, model, output_model, None, verbose, objective, fraction)
+    run(task, model, output_model, None, not silent, objective, fraction)
 
 
 @click.command()
@@ -359,7 +382,8 @@ def run(
     try:
         if task == TASK_CRITICAL_REACTIONS:
 
-            print("Task: Save results spreadsheet")
+            if verbose:
+                print("Task: Critical reactions report generation")
             config = CriticalCPConfig()
             config.model_path = model_path
             config.print_f = verbose_f
@@ -375,7 +399,8 @@ def run(
 
         elif task == TASK_SENSIBILITY:
 
-            print("Task: Save growth dependent chokepoints reports")
+            if verbose:
+                print("Task: Growth dependent reactions report generation")
             config = GrowthDependentCPConfig()
             config.model_path = model_path
             config.print_f = verbose_f
@@ -389,7 +414,8 @@ def run(
             facade.generate_growth_dependent_report(config)
 
         elif task == TASK_SAVE_WITHOUT_DEM:
-            print("Task: save model without dead end metabolites")
+            if verbose:
+                print("Task: save model without dead end metabolites")
             facade = Facade()
             facade.find_and_remove_dem(
                 False, output_path, verbose_f, model_path, args1=verbose, args2=None
@@ -397,7 +423,8 @@ def run(
             save_final_model(facade, output_path, verbose_f)
 
         elif task == TASK_SAVE_WITH_FVA:
-            print("Task: save model refined with Flux Variability Analysis")
+            if verbose:
+                print("Task: save model refined with Flux Variability Analysis")
             facade = Facade()
             error = facade.run_fva(
                 False,

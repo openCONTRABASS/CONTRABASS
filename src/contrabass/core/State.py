@@ -89,6 +89,8 @@ class State:
     __knockout_growth = None
     __essential_reactions = None
 
+    __error = None
+
     def id(self):
         return self.__id
 
@@ -179,7 +181,14 @@ class State:
     def set_dead_reactions(self, dead_reactions):
         self.__dead_reactions = dead_reactions
 
+    def set_error(self, error):
+        self.__error = error
+
+    def error(self):
+        return self.__error
+
     def to_json(self):
+
         return {
             "id": self.__id,
             "objective": self.__objective,
@@ -202,6 +211,7 @@ class State:
             "essential_reactions": self.__essential_reactions,
             "dead_reactions": self.__dead_reactions,
             "reversible_reactions": self.__reversible_reactions,
+            "error": self.__error if self.__error is not None else "",
         }
 
 
@@ -211,7 +221,7 @@ class CobraMetabolicStateBuilder:
     metabolites = None
     genes = None
 
-    def buildState(self, model):
+    def buildState(self, model, error=None):
         state = State()
         state.set_id(self.id(model))
         state.set_objective(self.objective(model))
@@ -225,6 +235,7 @@ class CobraMetabolicStateBuilder:
         state.set_essential_reactions(self.essential_reactions(model))
         state.set_dead_reactions(self.dead_reactions(model))
         state.set_reversible_reactions(self.reversible_reactions(model))
+        state.set_error(error)
         try:
             state.set_dem(self.dem(model))
         except Exception:

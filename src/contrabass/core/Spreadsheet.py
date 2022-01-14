@@ -1,3 +1,5 @@
+from copy import copy
+
 import xlwt
 import itertools
 from math import isnan
@@ -532,7 +534,7 @@ class Spreadsheet:
         sheet.write(0, 2, "MODEL INITIAL", style=style)
         sheet.write(0, 3, "MODEL WITHOUT DEM", style=style)
         sheet.write(0, 4, "MODEL FVA", style=style)
-        sheet.write(0, 5, "MODE FVA WITHOUT DEM", style=style)
+        sheet.write(0, 5, "MODEL FVA WITHOUT DEM", style=style)
 
         if ordered:
             genes = sorted(state_initial.genes(), key=self.__id)
@@ -544,13 +546,13 @@ class Spreadsheet:
             sheet.write(row, 0, gene.id)
             sheet.write(row, 1, gene.name)
             if gene.id in essential_genes_initial:
-                sheet.write(row, 2, True)
+                sheet.write(row, 2, "TRUE")
             if gene.id in essential_genes_dem:
-                sheet.write(row, 3, True)
+                sheet.write(row, 3, "TRUE")
             if gene.id in essential_genes_fva:
-                sheet.write(row, 4, True)
+                sheet.write(row, 4, "TRUE")
             if gene.id in essential_genes_fva_dem:
-                sheet.write(row, 5, True)
+                sheet.write(row, 5, "TRUE")
             row = row + 1
 
     def spreadsheet_write_summary_reactions(
@@ -623,9 +625,9 @@ class Spreadsheet:
         sheet.write(0, 0, "REACTION ID", style=style)
         sheet.write(0, 1, "REACTION", style=style)
         sheet.write(0, 2, "CHOKEPOINT INITIAL", style=style)
-        sheet.write(0, 3, "CHOKEPOINT AFTER DEM REMOVE", style=style)
+        sheet.write(0, 3, "CHOKEPOINT WITHOUT DEM", style=style)
         sheet.write(0, 4, "CHOKEPOINT AFTER FVA", style=style)
-        sheet.write(0, 5, "CHOKEPOINT AFTER FVA AND DEM REMOVE", style=style)
+        sheet.write(0, 5, "CHOKEPOINT AFTER FVA AND WITHOUT DEM", style=style)
         i = 1
         for reaction in reactions:
             sheet.write(i, 0, reaction.id)
@@ -756,9 +758,9 @@ class Spreadsheet:
         sheet = self.__spreadsheet.add_sheet(sheet_name)
         sheet.write(1, 0, "REACTION ID", style=style)
         sheet.write(0, 2, "INITIAL MODEL", style=style)
-        sheet.write(0, 6, "MODEL AFTER D.E.M. REMOVED", style=style)
-        sheet.write(0, 10, "MODEL AFTER F.V.A.", style=style)
-        sheet.write(0, 14, "MODEL AFTER F.V.A. AND D.E.M. REMOVED", style=style)
+        sheet.write(0, 6, "MODEL WITHOUT DEM", style=style)
+        sheet.write(0, 10, "MODEL AFTER FVA", style=style)
+        sheet.write(0, 14, "MODEL AFTER FVA AND WITHOUT DEM", style=style)
 
         sheet.write(1, 2, "CHOKEPOINT", style=style)
         sheet.write(1, 3, "ESSENTIAL GENE REACTION", style=style)
@@ -916,17 +918,10 @@ class Spreadsheet:
                 sheet.write(x + i + 3, y + 7, str(len(set_3)))
 
     def sets_intersection(self, set_list):
-        list_non_void_sets = []
-        for st in set_list:
-            if len(st) != 0:
-                list_non_void_sets.append(st)
-        if list_non_void_sets == []:
-            return set()
-        else:
-            aux = list_non_void_sets[0]
-            for i in range(1, len(list_non_void_sets)):
-                aux = aux.intersection(list_non_void_sets[i])
-            return aux
+        aux = copy(set_list[0])
+        for i in range(1, len(set_list)):
+            aux = aux.intersection(copy(set_list[i]))
+        return aux
 
     def sets_union(self, set_list):
         if set_list == []:
@@ -940,9 +935,8 @@ class Spreadsheet:
     def __aux_write_sets(self, sheet, x, y, ls):
         for i in range(len(ls)):
             st = ls.pop(i)
-            if len(st) != 0:
-                val = st.difference(self.sets_union(ls))
-                sheet.write(x, y + i + 2, len(val))
+            val = st.difference(self.sets_union(ls))
+            sheet.write(x, y + i + 2, len(val))
             ls.insert(i, st)
         val = self.sets_intersection(ls)
         sheet.write(x, y + 6, len(val))
@@ -965,14 +959,16 @@ class Spreadsheet:
             style=style,
         )
         sheet.write(x + 8, y + 1, "Reversible reactions", style=style)
-        sheet.write(x + 1, y + 2, "Only: initial model", style=style)
-        sheet.write(x + 1, y + 3, "Only: model without D.E.M.", style=style)
-        sheet.write(x + 1, y + 4, "Only: model updated with F.V.A.", style=style)
-        sheet.write(x + 1, y + 5, "Only: model with F.V.A. without D.E.M.", style=style)
-        sheet.write(x + 1, y + 6, "Intersection (only non void sets)", style=style)
+        sheet.write(x + 9, y + 1, "Dead reactions", style=style)
+
+        sheet.write(x + 1, y + 2, "Only: M0", style=style)
+        sheet.write(x + 1, y + 3, "Only: MNODEM", style=style)
+        sheet.write(x + 1, y + 4, "Only: MFVA", style=style)
+        sheet.write(x + 1, y + 5, "Only: MFVANODEM", style=style)
+        sheet.write(x + 1, y + 6, "Intersection", style=style)
         sheet.write(x + 1, y + 7, "Union 4 models", style=style)
 
-        # turn data to sets to operate with
+        # turn data into sets to operate with
         for model in model_results:
             for i in range(0, len(model)):
                 if isinstance(model[i], list):
@@ -988,6 +984,8 @@ class Spreadsheet:
                 model_results[2][i],
                 model_results[3][i],
             ]
+            if i == 8:
+                print(set_list)
             self.__aux_write_sets(sheet, x + i + 2, y, set_list)
 
     #
@@ -1016,10 +1014,10 @@ class Spreadsheet:
             sheet.write(x + 4, y + 1, subtitle3, style=style)
             sheet.write(x + 5, y + 1, "Intersection", style=style)
             sheet.write(x + 6, y + 1, "Union", style=style)
-        sheet.write(x + 1, y + 2, "Initial model", style=style)
-        sheet.write(x + 1, y + 3, "Model without D.E.M.", style=style)
-        sheet.write(x + 1, y + 4, "Model updated with F.V.A.", style=style)
-        sheet.write(x + 1, y + 5, "Model with F.V.A. without D.E.M.", style=style)
+        sheet.write(x + 1, y + 2, "M0", style=style)
+        sheet.write(x + 1, y + 3, "MNODEM", style=style)
+        sheet.write(x + 1, y + 4, "MFVA", style=style)
+        sheet.write(x + 1, y + 5, "MFVANODEM", style=style)
 
         i = 0
         for aux_y in range(2, 6):
@@ -1137,57 +1135,80 @@ class Spreadsheet:
                     rdl[j] = set(rdl[j].keys())
             reactions_data.append(rdl)
 
+        # First, we write model acronyms
         x = 0
         y = 0
-        sheet.write(x, y, "MODELS DATA", style=style)
-        sheet.write(x + 2, y + 1, "Metabolites", style=style)
-        sheet.write(x + 3, y + 1, "Reactions", style=style)
-        sheet.write(x + 1, y + 2, "Initial model", style=style)
-        sheet.write(x + 1, y + 3, "Model without D.E.M.", style=style)
-        sheet.write(x + 1, y + 4, "Model updated with F.V.A.", style=style)
-        sheet.write(x + 1, y + 5, "Model with F.V.A. without D.E.M.", style=style)
-        y = 2
+        sheet.write(y + 0, x + 0, "ACRONYMS", style=style)
+        sheet.write(y + 1, x + 1, "M0", style=style)
+        sheet.write(y + 2, x + 1, "MFVA", style=style)
+        sheet.write(y + 3, x + 1, "MNODEM", style=style)
+        sheet.write(y + 4, x + 1, "MFVANODEM", style=style)
+
+        sheet.write(y + 1, x + 2, "Model in the SBML file")
+        sheet.write(y + 2, x + 2, "Model M0 refined with FVA, i.e. with flux bounds constrained with FVA bounds")
+        sheet.write(y + 3, x + 2, "Model M0 without dead-end metabolites")
+        sheet.write(y + 4, x + 2, "Model M0 refined with FVA and without dead-end metabolites")
+
+        x = 0
+        y = y + 6
+        sheet.write(y, x, "MODELS DATA", style=style)
+        sheet.write(y + 2, x + 1, "Metabolites", style=style)
+        sheet.write(y + 3, x + 1, "Reactions", style=style)
+        sheet.write(y + 1, x + 2, "M0", style=style)
+        sheet.write(y + 1, x + 3, "MNODEM", style=style)
+        sheet.write(y + 1, x + 4, "MFVA", style=style)
+        sheet.write(y + 1, x + 5, "MFVANODEM", style=style)
+
         for m, r in zip(list_metabolites, list_reactions):
-            sheet.write(x + 2, y, m)
-            sheet.write(x + 3, y, r)
-            y = y + 1
+            sheet.write(y + 2, x + 2, m)
+            sheet.write(y + 3, x + 2, r)
+            x = x + 1
+
+        x = 0
+        y = y + 5 # blank space
 
         self.__aux_spreadsheet_write_two_model_summary(
             sheet,
             style,
-            7,
+            y,
             0,
-            "INITIAL MODEL BEFORE AND AFTER F.V.A.",
+            "M0 - MFVA",
             list_model_initial_results,
             list_model_fva_results,
         )
+
+        y = y + 11
         self.__aux_spreadsheet_write_two_model_summary(
             sheet,
             style,
-            18,
+            y,
             0,
-            "INITIAL MODEL BEFORE AND AFTER D.E.M. REMOVAL",
+            "M0 - MNODEM",
             list_model_initial_results,
             list_model_dem_results,
         )
+
+        y = y + 11
         self.__aux_spreadsheet_write_two_model_summary(
             sheet,
             style,
-            29,
+            y,
             0,
-            "MODEL FIRST UPDATED WITH F.V.A. BEFORE AND AFTER D.E.M. REMOVAL",
+            "MFVA - MFVANODEM",
             list_model_fva_results,
             list_model_fvadem_results,
         )
 
+        y = y + 11
         self.__aux_spreadsheet_write_four_model_summary(
-            sheet, style, 40, 0, "FOUR MODEL COMPARISON", models
+            sheet, style, y, 0, "FOUR MODEL COMPARISON", models
         )
 
+        y = y + 11
         self.__aux_write_four_model_two_summary(
             sheet,
             style,
-            51,
+            y,
             0,
             "CHOKEPOINT REACTIONS - ESSENTIAL GENES REACTIONS",
             "Only chokepoint reaction",
@@ -1195,10 +1216,12 @@ class Spreadsheet:
             "Only essential genes reactions",
             reactions_data[1],
         )
+
+        y = y + 7
         self.__aux_write_four_model_two_summary(
             sheet,
             style,
-            58,
+            y,
             0,
             "CHOKEPOINT REACTIONS - ESSENTIAL REACTIONS (objectite value < 5% max objective value)",
             "Only chokepoints",
@@ -1206,10 +1229,12 @@ class Spreadsheet:
             "Only essential reactions",
             reactions_data[2],
         )
+
+        y = y + 7
         self.__aux_write_four_model_two_summary(
             sheet,
             style,
-            66,
+            y,
             0,
             "ESSENTIAL GENES REACTIONS - ESSENTIAL REACTIONS (objectite value < 5% max objective value)",
             "Only essential genes reactions",
@@ -1218,10 +1243,11 @@ class Spreadsheet:
             reactions_data[2],
         )
 
+        y = y + 7
         self.__aux_write_four_model_two_summary(
             sheet,
             style,
-            74,
+            y,
             0,
             "CHOKEPOINT REACTIONS - ESSENTIAL GENES REACTIONS - ESSENTIAL REACTIONS (objectite value < 5% max objective value)",
             "Only chokepoints reactions",
@@ -1231,6 +1257,7 @@ class Spreadsheet:
             "Only essential reactions",
             reactions_data[2],
         )
+
 
     def spreadsheet_save_file(self, filename):
         """Saves the xlwt Workbook '__spreadsheet' to a valid file.

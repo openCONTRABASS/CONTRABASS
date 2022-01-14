@@ -109,9 +109,9 @@ class CobraMetabolicModel:
     def model(self):
         return self.__cobra_model
 
-    def save_state(self, key):
+    def save_state(self, key, error=None):
         builder = CobraMetabolicStateBuilder()
-        self.__states[key] = builder.buildState(self)
+        self.__states[key] = builder.buildState(self, error)
 
     def get_state(self, key):
         if key not in self.__states:
@@ -701,22 +701,28 @@ class CobraMetabolicModel:
             if num_mtbs == len(self.__cobra_model.metabolites):
                 break
 
-    def remove_dem(self, delete_exchange=False, keep_all_incomplete_reactions=True):
+    def remove_dem(self, delete_exchange=False, keep_all_exchange_demand_reactions=True):
         """ While there network changes, eliminates dead ends metabolites
             and reactions that only produce or consume
 
-            - delete_exchange:
+              - keep_all_exchange_demand_reactions:
+                - True: (default): A reaction is considered exchange or demand if
+                  it initially does not produce or consume any metabolite. This means the reaction represents an input or
+                  output of the metabolic network. If the paraemter is true, none of these reactions will be removed
+                  during the execution.
+                - False: If a reaction is a [cobra boundary reaction](https://cobrapy.readthedocs.io/en/latest/media.html#Boundary-reactions) (calculated with heuristics)
+                  that reaction will not be deleted during the execution. Note that exchange or demand reactions that are
+                  not indentified by the cobrapy framework as boundary reactions will be deleted.
+
+              - delete_exchange: Caution: this parameter is only intended for closed models without exchange or demand reactions, this is, models without reactions that do not produce or do not consume one metabolites on one of its sides (for example: EX_reaction: -> Metabolite_c). Note that most models do not match this property.
                 - True: all the reactions that produce or consume 0 metabolites are deleted whether they are exchange/demand or not.
-                - False: deleted according to 'keep_all_incomplete_reactions' param.
-            - keep_all_incomplete_reactions:
-                - False: if a reactions is in [cobra Boundary reactions](https://cobrapy.readthedocs.io/en/latest/media.html#Boundary-reactions) (calculated by heuristics) that reaction can't be deleted.
-                - True: if a reaction initially doesn't produce or consume any metabolite that reaction can't be deleted.
+                - False: (default) deleted according to 'keep_all_incomplete_reactions' param.
 
         :param delete_exchange: if True exchange and demand reactions are deleted
         :type delete_exchange: bool
-        :param keep_all_incomplete_reactions: If True all reactions that initially dont consume or dont produce any
+        :param keep_all_exchange_demand_reactions: If True all reactions that initially dont consume or dont produce any
                 metabolite are kept.
-        :type keep_all_incomplete_reactions: bool
+        :type keep_all_exchange_demand_reactions: bool
         :return:
         :rtype:
         """
@@ -724,11 +730,11 @@ class CobraMetabolicModel:
         self.__check_dem()
 
         if delete_exchange == True:
-            self.__remove_dem(True, keep_all_incomplete_reactions)
+            self.__remove_dem(True, keep_all_exchange_demand_reactions)
         elif len(self.__cobra_model.exchanges) == 0:
-            self.__remove_dem(True, keep_all_incomplete_reactions)
+            self.__remove_dem(True, keep_all_exchange_demand_reactions)
         else:
-            self.__remove_dem(False, keep_all_incomplete_reactions)
+            self.__remove_dem(False, keep_all_exchange_demand_reactions)
 
 
     def fva(self, loopless=False, verbose=False, update_flux=False, threshold=None, pfba_factor=None):
@@ -848,6 +854,7 @@ class CobraMetabolicModel:
                 self.__objective_value = None
 
             self.__knockout_growth = {}
+            self.get_growth()
             deletions = single_reaction_deletion(self.__cobra_model, method='fba', processes=self.__processes)
             reactions_knockout_growth = deletions.loc[:, :]['growth']
             for r, g in reactions_knockout_growth.iteritems():
@@ -860,11 +867,11 @@ class CobraMetabolicModel:
 
     def compute_essential_reactions(self):
         """
-        A reaction is considered a essential reactions if
+        A reaction is considered a essential reaction if
         the knock out of the reaction produces a growth equal to zero
         (inferior than CONST_EPSILON (solver tolerance) or is Nan).
 
-        If the individual knock-out of each reactions has not been computed,
+        If the individual knock-out of each reaction has not been computed,
         the method calls 'knockout_reactions_growth' first.
 
         The resulting list of reactions is saved at '__essential_reactions'.
@@ -937,7 +944,7 @@ class CobraMetabolicModel:
 
     def find_essential_genes_reactions(self):
         """ If the model has genes finds the reactions associated with the essential genes.
-            Searches essential genes if hasn't done before.
+            Searches essential genes if it has not been done before.
 
         """
         errors = []

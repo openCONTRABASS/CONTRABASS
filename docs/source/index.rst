@@ -12,7 +12,6 @@ Welcome to CONRTABASS's documentation!
 
     Introduction
     Installation
-    Pseudocode
     ToolCommands
     ComputeVulnerabilities
     ComputeGrowthDependent

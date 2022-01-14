@@ -11,21 +11,23 @@
 
 ## CONTRABASS - Constraint-based model vulnerabilities analysis
 
-```CONTRABASS``` is a command line python-tool for the computation of vulnerabilities reactions in genome-scale metabolic models. 
-The main purpose of the tool is to compute vulnerabilities by taking into account both the topology and the dynamic information of the network. In addition to the computation of chokepoints, CONTRABASS can compute and remove dead-end metabolites, find essential reactions and update the flux bounds of the reactions according to the results of Flux Variability Analysis. 
+```CONTRABASS``` is a tool for the detection of vulnerabilities in metabolic models. The main purpose of the tool is to compute chokepoint and essential reactions by taking into account both the topology and the dynamic information of the model. In addition to the detection of vulnerabilities, CONTRABASS can compute essential genes, compute and remove dead-end metabolites, compute different sets of growth-dependent reactions, and update the flux bounds of the reactions according to the results of Flux Variability Analysis.
 
-CONTRABASS takes as input an SBML files of genome-scale models, and provides as output a spreadsheet file and html report file with the results of the vulnerabilities computation.
+CONTRABASS takes as input the SBML file of a metabolic model, and provides as output a spreadsheet file and an html file reporting the obtained results. CONTRABASS accounts for the following sets of reactions and metabolites:
 
-**Chokepoint reactions:** Chokepoint reactions are those reactions that are either the unique consumer or the only producer of a given metabolite. CONTRABASS makes use of the flux bounds of the model to determine consumer and producer reactions, and in turn, to compute chokepoint reactions.
-
-**Dead-End Metabolites (DEM):** Dead-end metabolites are those metabolites that are not produced or consumed by any reaction.
-
-**Essential Reactions:** A reaction is considered an essential reaction if its deletion, this is, restricting its flux to zero, causes the objective (e.g. cellular growth) to be zero.
-
+- **Chokepoint reactions:**  A reaction is a chokepoint if it is the unique consumer or the only producer of a given metabolite.
+- **Essential Reactions:** A reaction is essential if its deletion, or equivalently, restricting its flux to zero, causes a significant decrease in the objective function (e.g. cellular growth). 
+- **Dead-End Metabolites (DEM):** A metabolite is a dead-end metabolite if it is not produced or not consumed by any reaction.
+- **Essential reactions for optimal growth:** A reaction is essential for optimal growth if its deletion, or equivalently, restricting its flux to zero, causes a decrease in the objective function.
+- **Dead reactions:** A reaction is dead is its upper flux bound and its lower flux bound are equal to zero.
+- **Blocked reactions:** A reaction is blocked if its flux is necessarily zero at any possible steady state of the model.
+- **Reversible reactions:** A reaction is reversible if its upper flux bound is strictly positive and its lower flux bound is strictly negative.
+- **Non-reversible reactions:** A reaction is non-reversible if it is not dead and not reversible.
+- **Essential genes:** A gene is essential if the objetive function (e.g. cellular growth) is zero when it is knocked down.
 
 <div align="center">
-    <p>Figure: Chokepoint reactions and dead-end metabolites example:</p>
     <img alt="Example" title="Example" src="https://github.com/openCONTRABASS/CONTRABASS/blob/main/docs/source/_static/chokepoints_example.png" width="600">
+    <p>Figure: In the network, reactions <i>Reac_2</i>, <i>Reac_5</i>, <i>Reac_6</i>, <i>Reac_7</i> and <i>Reac_8</i> are chokepoint reactions.<br>Metabolites <i>Lysine</i> and <i>Glutamate</i> are dead-end metabolites. </p>
 </div>
 
 The computation of vulnerabilities can also be exploited programmatically via the [Low Level API](#low-level-api) which is based on [COBRApy](https://github.com/opencobra/cobrapy). You can also [try the Low Level API with Binder](https://mybinder.org/v2/gh/openCONTRABASS/CONTRABASS/HEAD?labpath=docs%2Fsource%2FCORE.ipynb).
@@ -80,7 +82,7 @@ The next flowchart provides a graphical description of the available operations 
 </h1>
 
 More information about the parameters of the tool can be obtained by executing ``contrabass -h``. 
-For a detailed description of the operations see the [documentation](https://contrabass.readthedocs.io/en/latest/ToolCommands). 
+For a detailed description of the operations see the [documentation](https://contrabass.readthedocs.io/en/latest/index.html). 
 
 ```shell
   $ contrabass
@@ -100,7 +102,7 @@ For a detailed description of the operations see the [documentation](https://con
 
 ## Low Level API
 
-The computation of vulnerabilities can also be exploited via the COBRApy based low level API. For further information see [Low Level API documentation](https://contrabass.readthedocs.io/en/latest/CORE.html). 
+The computation of vulnerabilities can also be exploited via the COBRApy based low level API. For further information see the [Low Level API documentation](https://contrabass.readthedocs.io/en/latest/CORE.html). 
 You can also [try it with Binder](https://mybinder.org/v2/gh/openCONTRABASS/CONTRABASS/HEAD?labpath=docs%2Fsource%2FCORE.ipynb).
 
 Example of network refinement and chokepoint computation:

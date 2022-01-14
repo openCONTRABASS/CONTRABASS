@@ -50,32 +50,45 @@ class FacadeUtils:
         self.__processes = processes
 
     def __generate_sheet_sensibility_analysis(
-        self, xlwt_worbook, results_growth_dependent
+        self, xlwt_worbook, results_growth_dependent, model_state_data
     ):
 
         style = xlwt.XFStyle()
         font = xlwt.Font()
         font.bold = True
         style.font = font
-        sheet = xlwt_worbook.add_sheet("main")
+        sheet = xlwt_worbook.add_sheet("Growth dependent reactions")
 
         model = results_growth_dependent["model"]
 
         sheet.write(0, 0, "Model", style=style)
-        sheet.write(2, 0, "Reactions", style=style)
-        sheet.write(4, 0, "Metabolites", style=style)
-        sheet.write(1, 0, model.id())
-        sheet.write(3, 0, len(model.reactions()))
-        sheet.write(5, 0, len(model.metabolites()))
+        sheet.write(1, 0, "Reactions", style=style)
+        sheet.write(2, 0, "Metabolites", style=style)
+        sheet.write(3, 0, "Genes", style=style)
+        sheet.write(4, 0, "Growth rate (mmol g e−1 h e−1)", style=style)
+        sheet.write(5, 0, "Objective", style=style)
+        sheet.write(7, 0, "Blocked reactions", style=style)
+        sheet.write(8, 0, "Essential reactions", style=style)
+        sheet.write(9, 0, "Optimal growth essential reactions", style=style)
+        sheet.write(0, 1, model.id())
+        sheet.write(1, 1, len(model.reactions()))
+        sheet.write(2, 1, len(model.metabolites()))
+        sheet.write(3, 1, len(model.genes()))
+        sheet.write(4, 1, results_growth_dependent["growth"])
+        sheet.write(5, 1, results_growth_dependent["objective"])
+        sheet.write(7, 1, len(results_growth_dependent["blocked"]))
+        sheet.write(8, 1, len(results_growth_dependent["essential_reactions"][0]))  # only get the initial set of essential reactions
+        sheet.write(9, 1, len(results_growth_dependent["optimal_essential"]))
 
         y = 1
-        sheet.write(y + 0, 2, "Reversible Reactions (RR)", style=style)
-        sheet.write(y + 1, 2, "Non-reversible Reactions (NR)", style=style)
-        sheet.write(y + 2, 2, "Dead Reactions (DR)", style=style)
-        sheet.write(y + 3, 2, "Chokepoints (CP)", style=style)
+        sheet.write(y + 0, 4, "Reversible Reactions (RR)", style=style)
+        sheet.write(y + 1, 4, "Non-reversible Reactions (NR)", style=style)
+        sheet.write(y + 2, 4, "Dead Reactions (DR)", style=style)
+        sheet.write(y + 3, 4, "Chokepoints (CP)", style=style)
+        sheet.write(y + 4, 4, "Essential Reactions (ER)", style=style)
 
         y = 1
-        X_OFFSET = 4
+        X_OFFSET = 6
         for i in range(0, len(results_growth_dependent["index"])):
             if i == 0:
                 sheet.write(
@@ -106,7 +119,10 @@ class FacadeUtils:
                 sheet.write(
                     y + 3, i + X_OFFSET, len(results_growth_dependent["chokepoints"][i])
                 )
-            else:
+                sheet.write(
+                    y + 4, i + X_OFFSET, len(results_growth_dependent["essential_reactions"][i])
+                )
+            else:  # if we are directly given the size
                 sheet.write(
                     y + 0, i + X_OFFSET, results_growth_dependent["reversible"][i]
                 )
@@ -117,6 +133,17 @@ class FacadeUtils:
                 sheet.write(
                     y + 3, i + X_OFFSET, results_growth_dependent["chokepoints"][i]
                 )
+                sheet.write(
+                    y + 4, i + X_OFFSET, results_growth_dependent["essential_reactions"][i]
+                )
+
+        # generate basic data sheets
+        s = Spreadsheet()
+        s.set_workbook(xlwt_worbook)
+        s.spreadsheet_write_reactions(model_state_data, "reactions")
+        s.spreadsheet_write_metabolites(model_state_data, "metabolites")
+        s.spreadsheet_write_genes(model_state_data, "genes")
+        xlwt_worbook = s.get_workbook()
 
         return xlwt_worbook
 
@@ -142,6 +169,8 @@ class FacadeUtils:
 
         logger.print("Reading model...")
         model = read_model(model_path, objective=objective, processes=self.__processes)
+        model.save_state("initial") # we save the initial state just to get basic informatoin from the model later
+        initial_state_data = model.get_state("initial")
 
         logger.print("Computing essential reactions...")
         model.knockout_reactions_growth()
@@ -212,6 +241,7 @@ class FacadeUtils:
                     "Could not run Flux Variability Analysis: " + str(errors_fva[0])
                 )
                 err_msg = "Error running FVA: " + str(errors_fva[0])
+                results_growth_dependent["error"] = err_msg
                 results_growth_dependent["index"].append(str(FRAC[i]))
                 results_growth_dependent["reversible"].append(err_msg)
                 results_growth_dependent["dead"].append(err_msg)
@@ -248,11 +278,11 @@ class FacadeUtils:
             **self.__generate_model_info_dict(model),
         }
 
-        return results_growth_dependent
+        return results_growth_dependent, initial_state_data
 
-    def generate_growth_dependent_spreadsheet(self, growth_dependent_results):
+    def generate_growth_dependent_spreadsheet(self, growth_dependent_results, state):
         s = xlwt.Workbook()
-        s = self.__generate_sheet_sensibility_analysis(s, growth_dependent_results)
+        s = self.__generate_sheet_sensibility_analysis(s, growth_dependent_results, state)
         sObject = Spreadsheet()
         sObject.set_workbook(s)
 
@@ -281,12 +311,12 @@ class FacadeUtils:
             + "    xlwt_workbook = facadeUtils.generate_growth_dependent_spreadsheet(result)",
             DeprecationWarning,
         )
-        results_growth_dependent = self.compute_growth_dependent_chokepoints(
+        results_growth_dependent, model_state_data = self.compute_growth_dependent_chokepoints(
             model_path, print_f, arg1, arg2, objective
         )
 
         s = xlwt.Workbook()
-        s = self.__generate_sheet_sensibility_analysis(s, results_growth_dependent)
+        s = self.__generate_sheet_sensibility_analysis(s, results_growth_dependent, model_state_data)
         sObject = Spreadsheet()
         sObject.set_workbook(s)
 
@@ -321,14 +351,17 @@ class FacadeUtils:
         model.knockout_reactions_growth()
         print_f("Searching essential genes...", arg1, arg2)
         errors_initial = model.find_essential_genes_1()
+
+        error = None
         if errors_initial != []:
             MSG = "Couldn't find essential genes: " + str(errors_initial[0])
+            error = MSG
             print_f(MSG)
         else:
             print_f("Searching essential genes reactions...", arg1, arg2)
             model.find_essential_genes_reactions()
 
-        model.save_state("initial")
+        model.save_state("initial", error=error)
 
         print_f("Removing Dead End Metabolites (D.E.M.)...", arg1, arg2)
         model.remove_dem()
@@ -337,14 +370,19 @@ class FacadeUtils:
         print_f("Searching new chokepoint reactions...", arg1, arg2)
         model.find_chokepoints(exclude_dead_reactions=True)
 
+        error = None
         if errors_initial == []:
             print_f("Searching essential genes...", arg1, arg2)
             errors_dem = model.find_essential_genes_1()
             if errors_dem == []:
                 print_f("Searching essential genes reactions...", arg1, arg2)
                 model.find_essential_genes_reactions()
+            else:
+                error = errors_dem[0]
+        else:
+            error = errors_initial[0]
 
-        model.save_state("dem")
+        model.save_state("dem", error=error)
 
         print_f("Running Flux Variability Analysis...", arg1, arg2)
         model = CobraMetabolicModel(model_path)
@@ -356,8 +394,10 @@ class FacadeUtils:
 
         errors_fva = model.fva(update_flux=True, threshold=fraction)
 
+        error = None
         if errors_fva != []:
-            MSG = "Couldn't run Flux Variability Analysis: " + str(errors_fva[0])
+            MSG = "Could not run Flux Variability Analysis: " + str(errors_fva[0])
+            error = MSG
             print_f(MSG, arg1, arg2)
         else:
             print_f("Searching Dead End Metabolites (D.E.M.)...", arg1, arg2)
@@ -367,7 +407,8 @@ class FacadeUtils:
             print_f("Searching essential genes...", arg1, arg2)
             errors_fva_genes = model.find_essential_genes_1()
             if errors_fva_genes != []:
-                MSG = "Couldn't find essential genes: " + str(errors_fva_genes[0])
+                MSG = "Could not find essential genes: " + str(errors_fva_genes[0])
+                error = MSG
                 print_f(MSG)
             else:
                 print_f("Searching essential genes reactions...", arg1, arg2)
@@ -375,7 +416,7 @@ class FacadeUtils:
             print_f("Searching essential reactions...", arg1, arg2)
             model.knockout_reactions_growth()
 
-            model.save_state("fva")
+            model.save_state("fva", error=error)
 
             print_f("Removing Dead End Metabolites (D.E.M.)...", arg1, arg2)
             model.remove_dem()
@@ -383,19 +424,26 @@ class FacadeUtils:
             model.knockout_reactions_growth()
             print_f("Searching new chokepoint reactions...", arg1, arg2)
             model.find_chokepoints(exclude_dead_reactions=True)
+            error = None
             if errors_fva_genes == []:
                 print_f("Searching essential genes...", arg1, arg2)
                 model.find_essential_genes_1()
                 print_f("Searching essential genes reactions...", arg1, arg2)
                 model.find_essential_genes_reactions()
+            else:
+                error = None
 
-            model.save_state("fva_dem")
+            model.save_state("fva_dem", error=error)
 
         result = {}
         result["initial"] = model.get_state("initial")
         result["dem"] = model.get_state("dem")
         result["fva"] = model.get_state("fva")
         result["fva_dem"] = model.get_state("fva_dem")
+
+        errors_list_of_each_state = [result["initial"].error(), result["dem"].error(), result["fva"].error(), result["fva_dem"].error()]
+        result["error"] = next((el for el in errors_list_of_each_state if el is not None and len(el) > 0), "")
+
         # include general model info computed previously
         result = {**result, **general_info}
 
