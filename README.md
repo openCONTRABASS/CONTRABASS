@@ -35,6 +35,7 @@ The computation of vulnerabilities can also be exploited programmatically via th
 
 ## Table of Contents
 - [License](#license)
+- [Online Web](#online-web)
 - [Install](#Install)
 - [Quickstart](#Quickstart)
 - [Documentation](#documentation)
@@ -48,6 +49,10 @@ The computation of vulnerabilities can also be exploited programmatically via th
 
 CONTRABASS is released under [GPLv3 license](LICENSE).
 
+## Online Web
+
+CONTRABASS can also be executed through the [CONTRABASS Online Web App (http://contrabass.unizar.es)](http://contrabass.unizar.es).
+
 ## Install
 ```CONTRABASS``` can be installed via **pip** package manager:
 ```shell
@@ -59,7 +64,7 @@ CONTRABASS is released under [GPLv3 license](LICENSE).
 Generate report on vulnerabilities on input model ```MODEL.xml```
 
 ```shell
-  $ contrabass report critial-reactions MODEL.xml
+  $ contrabass report critical-reactions MODEL.xml
 ```
 
 Generate report on growth-dependent reactions on input model ```MODEL.xml```

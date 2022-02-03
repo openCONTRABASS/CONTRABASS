@@ -1,5 +1,5 @@
 
-9. License
+10. License
 ===============
 
 CONTRABASS is released under GPLv3_.

@@ -1,3 +1,5 @@
+.. _growth-op-documentation:
+
 5. Compute growth dependent reactions
 ========================================
 .

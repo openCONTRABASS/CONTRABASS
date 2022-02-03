@@ -834,24 +834,7 @@ class Spreadsheet:
         if state.essential_genes() is not None:
             essential_genes = [g.id for g in state.essential_genes()]
 
-        er_g0 = []
-        er_g005 = []
-        objective_value = state.objective_value()
-        if state.objective_value() is not None:
-            if not isnan(state.objective_value()):
-                objective_value_005 = state.objective_value() * 0.05
-            else:
-                objective_value_005 = 0
-            for reaction, value in knockout_growth.items():
-                if not isnan(objective_value):
-                    if isnan(value) or value == 0:
-                        er_g0.append(reaction)
-                        er_g005.append(reaction)
-                    elif value < objective_value_005:
-                        er_g005.append(reaction)
-                else:
-                    er_g0.append(reaction)
-                    er_g005.append(reaction)
+        essential_reactions = state.essential_reactions()
 
         reversibles = state.reversible_reactions()
 
@@ -862,9 +845,7 @@ class Spreadsheet:
             list(chokepoints_dict.keys()),
             essential_genes,
             genes_reactions_dict,
-            knockout_growth,
-            er_g0,
-            er_g005,
+            essential_reactions,
             reversibles,
             dead_reactions,
         ]
@@ -878,15 +859,9 @@ class Spreadsheet:
         sheet.write(x + 3, y + 1, "Chokepoint reactions", style=style)
         sheet.write(x + 4, y + 1, "Essential genes", style=style)
         sheet.write(x + 5, y + 1, "Essential genes reactions", style=style)
-        sheet.write(x + 6, y + 1, "Essential reactions (objective=0)", style=style)
-        sheet.write(
-            x + 7,
-            y + 1,
-            "Essential reactions (objective < 5% max objective)",
-            style=style,
-        )
-        sheet.write(x + 8, y + 1, "Reversible reactions", style=style)
-        sheet.write(x + 9, y + 1, "Dead reactions", style=style)
+        sheet.write(x + 6, y + 1, "Essential reactions", style=style)
+        sheet.write(x + 7, y + 1, "Reversible reactions", style=style)
+        sheet.write(x + 8, y + 1, "Dead reactions", style=style)
         sheet.write(x + 1, y + 2, "Before", style=style)
         sheet.write(x + 1, y + 3, "After", style=style)
         sheet.write(x + 1, y + 5, "Only before", style=style)
@@ -951,15 +926,9 @@ class Spreadsheet:
         sheet.write(x + 3, y + 1, "Chokepoint reactions", style=style)
         sheet.write(x + 4, y + 1, "Essential genes", style=style)
         sheet.write(x + 5, y + 1, "Essential genes reactions", style=style)
-        sheet.write(x + 6, y + 1, "Essential reactions (objective=0)", style=style)
-        sheet.write(
-            x + 7,
-            y + 1,
-            "Essential reactions (objective < 5% max objective)",
-            style=style,
-        )
-        sheet.write(x + 8, y + 1, "Reversible reactions", style=style)
-        sheet.write(x + 9, y + 1, "Dead reactions", style=style)
+        sheet.write(x + 6, y + 1, "Essential reactions", style=style)
+        sheet.write(x + 7, y + 1, "Reversible reactions", style=style)
+        sheet.write(x + 8, y + 1, "Dead reactions", style=style)
 
         sheet.write(x + 1, y + 2, "Only: M0", style=style)
         sheet.write(x + 1, y + 3, "Only: MNODEM", style=style)
@@ -984,8 +953,6 @@ class Spreadsheet:
                 model_results[2][i],
                 model_results[3][i],
             ]
-            if i == 8:
-                print(set_list)
             self.__aux_write_sets(sheet, x + i + 2, y, set_list)
 
     #
@@ -1100,10 +1067,6 @@ class Spreadsheet:
             list_model_fvadem_results,
         ]
 
-        # remove essential_reactions list with objective values
-        for m in models:
-            del m[4]
-
         list_metabolites = [
             len(state_initial.metabolites()),
             len(state_dem.metabolites()),
@@ -1119,9 +1082,9 @@ class Spreadsheet:
 
         # 1: list(chokepoints_dict.keys()),
         # 3: genes_reactions_dict,
-        # 5: er_g0
+        # 4: essential_reactions
         reactions_data = []
-        for i in [1, 3, 5]:
+        for i in [1, 3, 4]:
             rdl = [
                 list_model_initial_results[i],
                 list_model_dem_results[i],
@@ -1223,7 +1186,7 @@ class Spreadsheet:
             style,
             y,
             0,
-            "CHOKEPOINT REACTIONS - ESSENTIAL REACTIONS (objectite value < 5% max objective value)",
+            "CHOKEPOINT REACTIONS - ESSENTIAL REACTIONS",
             "Only chokepoints",
             reactions_data[0],
             "Only essential reactions",
@@ -1236,7 +1199,7 @@ class Spreadsheet:
             style,
             y,
             0,
-            "ESSENTIAL GENES REACTIONS - ESSENTIAL REACTIONS (objectite value < 5% max objective value)",
+            "ESSENTIAL GENES REACTIONS - ESSENTIAL REACTIONS",
             "Only essential genes reactions",
             reactions_data[1],
             "Only essential reactions",
@@ -1249,7 +1212,7 @@ class Spreadsheet:
             style,
             y,
             0,
-            "CHOKEPOINT REACTIONS - ESSENTIAL GENES REACTIONS - ESSENTIAL REACTIONS (objectite value < 5% max objective value)",
+            "CHOKEPOINT REACTIONS - ESSENTIAL GENES REACTIONS - ESSENTIAL REACTIONS",
             "Only chokepoints reactions",
             reactions_data[0],
             "Only essential genes reactions",
