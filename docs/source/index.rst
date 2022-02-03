@@ -11,7 +11,6 @@ Welcome to CONTRABASS's documentation!
     :glob:
 
     Introduction
-    OnlineWebApp
     Installation
     ToolCommands
     ComputeVulnerabilities
@@ -19,6 +18,7 @@ Welcome to CONTRABASS's documentation!
     RemoveDeadEndMetabolites
     RefineModelWithFVA
     CORE
+    OnlineWebApp
     License
 
 
