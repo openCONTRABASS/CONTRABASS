@@ -18,6 +18,7 @@ of the ```Try this model``` buttons in the box on the right (see image below). (
     :align: center
     :alt: step 1
 
+
 9.1.2. Run operation
 ************************
 
@@ -46,6 +47,7 @@ While the selected operation is being executed, the page will show feedback on t
     :align: center
     :alt: step 4
 
+
 9.1.3. Download reports
 ************************
 
@@ -61,5 +63,5 @@ Once the selected operation ends its execution, the web will display 2 buttons (
 
 
 
-.. _CONTRABASS-Online: https://github.com/openCONTRABASS/CONTRABASS/blob/master/LICENSE
+.. _CONTRABASS-Online: http://contrabass.unizar.es
 
