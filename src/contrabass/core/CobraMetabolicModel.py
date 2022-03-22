@@ -33,11 +33,6 @@ if platform == "win32":
 else:
     PROCESSES = None
 
-CONST_EPSILON = 0.000005
-
-
-# CONST_EPSILON = 1E-12
-
 
 class NullDevice():
     def write(self, s):
@@ -95,6 +90,9 @@ class CobraMetabolicModel:
     # By default this value will be PROCESSES constant value
     __processes = None
 
+    # solver tolerance
+    CONST_EPSILON = 1e-8
+
     @property
     def processes(self):
         return self.__processes
@@ -104,7 +102,10 @@ class CobraMetabolicModel:
         self.__processes = processes
 
     def epsilon(self):
-        return CONST_EPSILON
+        return self.CONST_EPSILON
+
+    def set_epsilon(self, epsilon):
+        self.CONST_EPSILON = epsilon
 
     def model(self):
         return self.__cobra_model
@@ -277,8 +278,8 @@ class CobraMetabolicModel:
         :return: List of cobra.core.reaction with dead-reactions
         :rtype: list([ cobra.core.reaction ])
         """
-        return list(filter(lambda reaction: abs(reaction.upper_bound) < CONST_EPSILON \
-                                            and abs(reaction.lower_bound) < CONST_EPSILON, \
+        return list(filter(lambda reaction: abs(reaction.upper_bound) < self.CONST_EPSILON \
+                                            and abs(reaction.lower_bound) < self.CONST_EPSILON, \
                            self.__cobra_model.reactions))
 
     def exchange_demand_reactions(self):
@@ -397,11 +398,11 @@ class CobraMetabolicModel:
         Returns: Enum: FORWARD/BACKWARD/REVERSIBLE depending on the direction of the reaction.
 
         """
-        if - CONST_EPSILON < reaction.upper_bound < CONST_EPSILON:
+        if - self.CONST_EPSILON < reaction.upper_bound < self.CONST_EPSILON:
             upper = 0
         else:
             upper = reaction.upper_bound
-        if - CONST_EPSILON < reaction.lower_bound < CONST_EPSILON:
+        if - self.CONST_EPSILON < reaction.lower_bound < self.CONST_EPSILON:
             lower = 0
         else:
             lower = reaction.lower_bound
@@ -417,7 +418,7 @@ class CobraMetabolicModel:
             return self._Direction.BACKWARD
 
     def __is_dead_reaction(self, reaction):
-        return abs(reaction.upper_bound) < CONST_EPSILON and abs(reaction.lower_bound) < CONST_EPSILON
+        return abs(reaction.upper_bound) < self.CONST_EPSILON and abs(reaction.lower_bound) < self.CONST_EPSILON
 
     def find_dem_2(self, compartment="ALL"):
         """ Finds the dead end metabolites of the model or a specific comparment.
@@ -869,7 +870,7 @@ class CobraMetabolicModel:
         """
         A reaction is considered a essential reaction if
         the knock out of the reaction produces a growth equal to zero
-        (inferior than CONST_EPSILON (solver tolerance) or is Nan).
+        (inferior than self.CONST_EPSILON (solver tolerance) or is Nan).
 
         If the individual knock-out of each reaction has not been computed,
         the method calls 'knockout_reactions_growth' first.
@@ -882,7 +883,7 @@ class CobraMetabolicModel:
         if self.__objective_value is None:
             return
         for reaction, growth in self.__knockout_growth.items():
-            if isnan(growth) or growth < CONST_EPSILON:
+            if isnan(growth) or growth < self.CONST_EPSILON:
                 self.__essential_reactions.append(reaction)
 
     def find_growth_essential_reactions(self, fraction_of_optimum_growth):
@@ -896,7 +897,7 @@ class CobraMetabolicModel:
             MAX_GROWTH = self.get_growth()
             essential_reactions_growth = set([])
             for reaction, growth in self.knockout_growth().items():
-                if isnan(growth) or growth + CONST_EPSILON < (MAX_GROWTH * fraction_of_optimum_growth):
+                if isnan(growth) or growth + self.CONST_EPSILON < (MAX_GROWTH * fraction_of_optimum_growth):
                     essential_reactions_growth.add(reaction)
             self.__growth_essential_reaction = essential_reactions_growth
         except Exception as error:
@@ -910,7 +911,7 @@ class CobraMetabolicModel:
             MAX_GROWTH = self.get_growth()
             MGER = set([])
             for r, g in self.knockout_growth().items():
-                if isnan(g) or g < CONST_EPSILON or g + CONST_EPSILON < MAX_GROWTH:
+                if isnan(g) or g < self.CONST_EPSILON or g + self.CONST_EPSILON < MAX_GROWTH:
                     MGER.add(r)
             self.__optimal_growth_essential_reaction = MGER
         except Exception as error:
