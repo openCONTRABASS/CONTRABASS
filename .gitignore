@@ -29,7 +29,7 @@ MANIFEST
 # Project exclusive
 README_build.md
 .idea/
-results/
+results_generation/
 
 # Environments
 .venv
