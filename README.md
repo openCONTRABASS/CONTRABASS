@@ -2,7 +2,6 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) 
 [![CI-CD](https://github.com/openCONTRABASS/CONTRABASS/actions/workflows/main.yml/badge.svg)](https://github.com/openCONTRABASS/CONTRABASS/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/openCONTRABASS/CONTRABASS/branch/main/graph/badge.svg?token=C9F6FT0PAV)](https://codecov.io/gh/openCONTRABASS/CONTRABASS)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=openCONTRABASS_CONTRABASS&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=openCONTRABASS_CONTRABASS) 
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme) 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) 
 [![Documentation Status](https://readthedocs.org/projects/contrabass/badge/?version=latest)](https://contrabass.readthedocs.io/en/latest/?badge=latest) 
@@ -34,6 +33,7 @@ The computation of vulnerabilities can also be exploited programmatically via th
 
 
 ## Table of Contents
+- [Citation](#citation)
 - [License](#license)
 - [Online Web](#online-web)
 - [Install](#Install)
@@ -44,6 +44,25 @@ The computation of vulnerabilities can also be exploited programmatically via th
 - [Maintainers](#maintainers)
 - [Contributing](#contributing)
 
+
+## Citation
+
+```bib
+@article{10.1093/bioinformatics/btad053,
+    author = {Oarga, Alexandru and Bannerman, Bridget P and Júlvez, Jorge},
+    title = "{CONTRABASS: exploiting flux constraints in genome-scale models for the detection of vulnerabilities}",
+    journal = {Bioinformatics},
+    volume = {39},
+    number = {2},
+    pages = {btad053},
+    year = {2023},
+    month = {01},
+    issn = {1367-4811},
+    doi = {10.1093/bioinformatics/btad053},
+    url = {https://doi.org/10.1093/bioinformatics/btad053},
+    eprint = {https://academic.oup.com/bioinformatics/article-pdf/39/2/btad053/49123769/btad053.pdf},
+}
+```
 
 ## License
 
