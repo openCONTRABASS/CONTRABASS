@@ -8,7 +8,7 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/openCONTRABASS/CONTRABASS/HEAD?labpath=docs%2Fsource%2FCORE.ipynb)
 [![DOI](https://zenodo.org/badge/427404496.svg)](https://zenodo.org/badge/latestdoi/427404496)
 
-## CONTRABASS - Constraint-based model vulnerabilities analysis
+## CONTRABASS - Constraint-based model vulnerabilities analysis  [[Paper]](https://doi.org/10.1093/bioinformatics/btad053)
 
 ```CONTRABASS``` is a tool for the detection of vulnerabilities in metabolic models. The main purpose of the tool is to compute chokepoint and essential reactions by taking into account both the topology and the dynamic information of the model. In addition to the detection of vulnerabilities, CONTRABASS can compute essential genes, compute and remove dead-end metabolites, compute different sets of growth-dependent reactions, and update the flux bounds of the reactions according to the results of Flux Variability Analysis.
 
@@ -46,6 +46,8 @@ The computation of vulnerabilities can also be exploited programmatically via th
 
 
 ## Citation
+
+[[Paper]](https://doi.org/10.1093/bioinformatics/btad053)
 
 ```bib
 @article{10.1093/bioinformatics/btad053,
