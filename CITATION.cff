@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Oarga"
+  given-names: "Alexandru"
+- family-names: "Bannerman"
+  given-names: "Bridget P"
+- family-names: "Júlvez"
+  given-names: "Jorge"
+title: "CONTRABASS: exploiting flux constraints in genome-scale models for the detection of vulnerabilities"
+version: 0.2.1
+doi: 10.1093/bioinformatics/btad053
+date-released: 2023-02-02
+url: "https://doi.org/10.1093/bioinformatics/btad053"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Oarga"
+    given-names: "Alexandru"
+  - family-names: "Bannerman"
+    given-names: "Bridget P"
+  - family-names: "Júlvez"
+    given-names: "Jorge"
+  doi: "10.1093/bioinformatics/btad053"
+  journal: "Bioinformatics"
+  month: 2
+  start: "btad053"
+  end: "btad053"
+  title: "CONTRABASS: exploiting flux constraints in genome-scale models for the detection of vulnerabilities"
+  issue: 2
+  volume: 39
+  year: 2023
+  publisher: "Oxford University Press"
+

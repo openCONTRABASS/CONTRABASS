@@ -8,6 +8,7 @@ mpmath
 numpy>=1.16.5
 optlang>=1.4.2
 pandas>=0.17.0
+pipdeptree==0.13.1
 python-dateutil
 python-libsbml
 python-libsbml-experimental==5.18.0
