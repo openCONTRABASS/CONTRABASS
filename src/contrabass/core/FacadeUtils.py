@@ -7,7 +7,6 @@ import json
 
 from jinja2 import Environment, FileSystemLoader, Template
 from datetime import datetime
-from depinfo import get_pkg_info
 from dotenv import load_dotenv
 
 try:

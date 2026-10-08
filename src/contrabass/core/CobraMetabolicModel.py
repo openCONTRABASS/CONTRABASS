@@ -14,12 +14,26 @@ from contrabass.core.State import CobraMetabolicStateBuilder
 import cobra
 from cobra.io.sbml import validate_sbml_model
 from cobra.flux_analysis import flux_variability_analysis
-from cobra.manipulation import delete
-from cobra.manipulation.delete import find_gene_knockout_reactions
+from cobra.flux_analysis import find_essential_genes
 from cobra.flux_analysis.deletion import single_reaction_deletion
-from cobra.flux_analysis import find_essential_reactions
 
 from optlang.exceptions import SolverError
+
+
+def find_gene_knockout_reactions(model, gene_list):
+    """Identify reactions disabled when the given genes are knocked out.
+
+    Replacement for the helper removed from cobrapy (>=0.26). Uses GPR
+    evaluation so the model is not mutated.
+    """
+    potential_reactions = set()
+    gene_ids = set()
+    for gene in gene_list:
+        if isinstance(gene, str):
+            gene = model.genes.get_by_id(gene)
+        potential_reactions.update(gene.reactions)
+        gene_ids.add(gene.id)
+    return [r for r in potential_reactions if not r.gpr.eval(gene_ids)]
 
 from multiprocessing import Process
 from time import sleep
@@ -321,8 +335,8 @@ class CobraMetabolicModel:
         original_stderr = sys.stderr  # keep a reference to STDERR
         sys.stderr = NullDevice()  # redirect the real STDERR
         try:
-            # Default interface
-            cobra.core.model.configuration.solver = 'glpk'
+            # Default solver for newly created / loaded models
+            cobra.Configuration().solver = 'glpk'
 
             # read model
             if path[-4:] == ".xml":
@@ -764,12 +778,14 @@ class CobraMetabolicModel:
         try:
             i = 0
             fva_result = []
+            # cobrapy >=0.26 expects None/'fastSNP'/'cycleFreeFlux' instead of bool
+            loopless_arg = "cycleFreeFlux" if loopless is True else (None if loopless is False else loopless)
             # Run FVA analysis
             if threshold is None and pfba_factor is None:
-                fva_reactions = flux_variability_analysis(self.__cobra_model, loopless=loopless,
+                fva_reactions = flux_variability_analysis(self.__cobra_model, loopless=loopless_arg,
                                                           processes=self.__processes)
             else:
-                fva_reactions = flux_variability_analysis(self.__cobra_model, loopless=loopless,
+                fva_reactions = flux_variability_analysis(self.__cobra_model, loopless=loopless_arg,
                                                           fraction_of_optimum=threshold, pfba_factor=pfba_factor,
                                                           processes=self.__processes)
             for reaction_id in fva_reactions.index:
@@ -857,9 +873,11 @@ class CobraMetabolicModel:
             self.__knockout_growth = {}
             self.get_growth()
             deletions = single_reaction_deletion(self.__cobra_model, method='fba', processes=self.__processes)
-            reactions_knockout_growth = deletions.loc[:, :]['growth']
-            for r, g in reactions_knockout_growth.iteritems():
-                reaction = self.__cobra_model.reactions.get_by_id(list(r)[0])
+            reactions_knockout_growth = deletions['growth']
+            for r, g in reactions_knockout_growth.items():
+                # Deletion index may be a frozenset of reaction ids or a plain id string
+                reaction_id = list(r)[0] if isinstance(r, (set, frozenset)) else r
+                reaction = self.__cobra_model.reactions.get_by_id(reaction_id)
                 self.__knockout_growth[reaction] = g
         except Exception as error:
             errors.append(str(error))
@@ -930,7 +948,7 @@ class CobraMetabolicModel:
         errors = []
         try:
             # TODO: check processes number (because deadlock)
-            aux = cobra.flux_analysis.variability.find_essential_genes(self.__cobra_model, processes=self.__processes)
+            aux = find_essential_genes(self.__cobra_model, processes=self.__processes)
             self.__essential_genes = aux
         except cobra.exceptions.Infeasible as error:
             self.__essential_genes = []
